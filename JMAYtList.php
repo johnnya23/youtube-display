@@ -49,7 +49,7 @@ class JMAYtList extends JMAYtVideo {
             $trans_id .= $break . $res_col;
         }
 
-        $trans_id .= $this->id . $this->trans_atts_id;
+        $trans_id .= $this->id . $this->trans_atts_id . $offset . $max;
         $return = get_transient( $trans_id );
         if(false === $return || !$jmayt_options_array['cache']) {//if cache at 0
             $yt_api_array = JMAYtList::yt_loop($this->id, $offset, $max);
