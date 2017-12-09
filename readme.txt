@@ -2,8 +2,8 @@
 Contributors: johnnya23
 Tags: youtube, schema, youtube gallery, youtube playlist, youtube embed, youtube seo, youtube channel, responsive youtube
 Requires at least: 4.0
-Tested up to: 4.9
-Stable tag: 1.2.4
+Tested up to: 4.9.1
+Stable tag: 1.3
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -28,6 +28,8 @@ item_font_alignment &#8211; left, right, center
 item_font_length &#8211; number of characters from title to display (will round down to nearest word)
 item_bg &#8211; background color
 item_border &#8211; border color
+^query_max &#8211; maximum number of videos to display
+^query_offset &#8211; offset query at beginning by this value
 ^item_gutter &#8211; horizontal spacing (even # between 0 and 30 recommended)
 ^item_spacing &#8211; vertical spacing
 button_font &#8211; for expansion buttons on upper left of items (the arrow color)

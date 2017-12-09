@@ -3,7 +3,7 @@
 Plugin Name: Responsive YouTube Videos and Playlists with Schema
 Plugin URI: https://cleansupersites.com/jma-youtube-playlists-with-schema/
 Description: Makes available shortcode for embed of single videos and grids from YouTube video playlists, which include schema.org markup as recommended by google.
-Version: 1.2.4
+Version: 1.3
 Author: John Antonacci
 Author URI: http://cleansupersites.com
 License: GPL2
@@ -253,7 +253,7 @@ $settings = array(
      * */
     'display' => array(
         'title'					=> __( 'YouTube Display Options', 'jmayt_textdomain' ),
-        'description'			=> __( 'These are some default display settings (they can be overridden with shortcode)', 'jmayt_textdomain' ),
+        'description'			=> __( 'These are some default display settings (they can be overridden with shortcode parameters which are shown in parens)', 'jmayt_textdomain' ),
 
         /*
          * fields for this section section
@@ -303,20 +303,6 @@ $settings = array(
                 'default'		=> 0
             ),
             array(
-                'id' 			=> 'item_gutter',
-                'label'			=> __( 'Grid horizontal spacing', 'jmayt_textdomain' ),
-                'description'	=> __( 'in px between YouTube grid items - best results even number between 0 and 30 (item_gutter)', 'jmayt_textdomain' ),
-                'type'			=> 'number',
-                'default'		=> '30'
-            ),
-            array(
-                'id' 			=> 'item_spacing',
-                'label'			=> __( 'Grid vertical spacing', 'jmayt_textdomain' ),
-                'description'	=> __( 'in px between YouTube grid items (item_spacing)', 'jmayt_textdomain' ),
-                'type'			=> 'number',
-                'default'		=> '15'
-            ),
-            array(
                 'id' 			=> 'button_font',
                 'class'         => 'picker',
                 'label'			=> __( 'Button arrow color', 'jmayt_textdomain' ),
@@ -330,6 +316,41 @@ $settings = array(
                 'description'	=> __( 'for expansion buttons on upper leftof YouTube items (button_bg)', 'jmayt_textdomain' ),
                 'type'			=> 'color',
                 'default'		=> '#cbe0e9'
+            )
+        )
+    ),
+
+     /*
+     * start of a new section
+     * */
+    'grid' => array(
+        'title'					=> __( 'YouTube Grid Options', 'jmayt_textdomain' ),
+        'description'			=> __( 'These are some grid specific settings (they can be overridden with shortcode parameters which are shown in parens)', 'jmayt_textdomain' ),
+
+        /*
+         * fields for this section section
+         * */
+        'fields'				=> array(
+            array(
+                'id' 			=> 'query_max',
+                'label'			=> __( 'The maximun number of entries to show in the grid', 'jmayt_textdomain' ),
+                'description'	=> __( '0 for all (query_max) - (query_offset) in for shortcode offset', 'jmayt_textdomain' ),
+                'type'			=> 'number',
+                'default'		=> 50
+            ),
+            array(
+                'id' 			=> 'item_gutter',
+                'label'			=> __( 'Grid horizontal spacing', 'jmayt_textdomain' ),
+                'description'	=> __( 'in px between YouTube grid items - best results even number between 0 and 30 (item_gutter)', 'jmayt_textdomain' ),
+                'type'			=> 'number',
+                'default'		=> '30'
+            ),
+            array(
+                'id' 			=> 'item_spacing',
+                'label'			=> __( 'Grid vertical spacing', 'jmayt_textdomain' ),
+                'description'	=> __( 'in px between YouTube grid items (item_spacing)', 'jmayt_textdomain' ),
+                'type'			=> 'number',
+                'default'		=> '15'
             ),
             array(
                 'id' 			=> 'lg_cols',
@@ -654,6 +675,16 @@ function jma_yt_grid($atts){
             $responsive_cols[$index] = $att;
         }
     }
+    $max = 10000;
+    $offset = 0;
+    if($jmayt_options_array['query_max'] > 0)
+        $max = $jmayt_options_array['query_max'];
+
+    if(isset($atts['query_max']))
+        $max = $atts['query_max'];
+
+    if(isset($atts['query_offset']))
+        $offset = $atts['query_offset'];
 
     ob_start();
     $attributes = array(
@@ -668,7 +699,7 @@ function jma_yt_grid($atts){
         }
     }
     echo '>';
-    echo $you_tube_list->markup($responsive_cols);
+    echo $you_tube_list->markup($responsive_cols, $offset, $max);
     echo '</div><!--yt-list-wrap-->';
     $x = ob_get_contents();
     ob_end_clean();

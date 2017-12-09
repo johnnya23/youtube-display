@@ -6,14 +6,26 @@ class JMAYtList extends JMAYtVideo {
      * returns the youotube api array for a list
      * using $yt_list_id and  $this->api
      * */
-    function yt_loop($yt_list_id){
+    function yt_loop($yt_list_id, $offset=0, $max=10000){
         $return = array();
+        $next = '';
 
-        $youtube_array = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=50&playlistId=' . $yt_list_id . '&fields=items%2Fsnippet&key=' . $this->api;
-
-        $curl_array = JMAYtList::curl($youtube_array);
-        if($curl_array)
-            $return = $curl_array;
+        if($offset){
+            $offsetarray = 'https://www.googleapis.com/youtube/v3/playlistItems?part=contentDetails&maxResults=' . $offset . '&playlistId=' . $yt_list_id . '&key=' . $this->api;
+            $curl_array = JMAYtList::curl($offsetarray);
+            $next =isset($curl_array['nextPageToken'])? '&pageToken=' . $curl_array['nextPageToken']:'';
+        }
+        do{
+            $maxval = $max > 50? 50: $max;
+            $max =$max - 50;
+            $youtube_array = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=' . $maxval . $next . '&playlistId=' . $yt_list_id . '&key=' . $this->api;
+            $curl_array = JMAYtList::curl($youtube_array);
+            $next =isset($curl_array['nextPageToken'])? '&pageToken=' . $curl_array['nextPageToken']:'';
+            if($curl_array)
+                $return = array_merge($return, $curl_array['items']);
+        }while($next && $max > 0);
+        //echo '<pre>';print_r($return);echo '</pre>';
+        //echo $return['nextPageToken'];
         return $return;
     }
 
@@ -29,7 +41,7 @@ class JMAYtList extends JMAYtVideo {
      * returns $return - video list html
      *
     * */
-    public function markup($res_cols = array()){
+    public function markup($res_cols = array(), $offset, $max){
         global $jmayt_options_array;
         $col_class = '';
         $trans_id = 'jmaytvideolist';
@@ -40,13 +52,13 @@ class JMAYtList extends JMAYtVideo {
         $trans_id .= $this->id . $this->trans_atts_id;
         $return = get_transient( $trans_id );
         if(false === $return || !$jmayt_options_array['cache']) {//if cache at 0
-            $yt_api_array = JMAYtList::yt_loop($this->id);
+            $yt_api_array = JMAYtList::yt_loop($this->id, $offset, $max);
 
             //kick errors to error handler here
             if(is_string($yt_api_array))
                 return JMAYtVideo::error_handler($yt_api_array);
 
-            $yt_loop_items = $yt_api_array['items'];
+            $yt_loop_items = $yt_api_array;
             $count = count($yt_loop_items);
             $i = 0;
             if ($count > 0) {

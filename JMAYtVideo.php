@@ -30,7 +30,7 @@ class JMAYtVideo {
         curl_close($curl);
         $return = json_decode($result, true);
         if(!$return || array_key_exists ('error', $return)){
-            if(array_key_exists ('error', $return))
+            if(is_array($return) && array_key_exists ('error', $return))
                 $return = $return['error']['errors'][0]['reason'];//keyInvalid, playlistNotFound, accessNotConfigured, ipRefererBlocked, keyExpired
             else
                 $return = 'unknown';
