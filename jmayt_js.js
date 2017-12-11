@@ -1,7 +1,7 @@
 function jmayt_title_resize(){
     jQuery('.jmayt-list-wrap').each(function(){
         //make all title boxes the same height as the largest box
-        $title = jQuery(this);
+        var $title = jQuery(this);
         var $title_max = Math.max.apply(null, $title.find('h3').map(function () {
             return jQuery(this).outerHeight();
         }).get());
@@ -24,16 +24,16 @@ function jmayt_toggle(){
 
     function jmayt_show_lightbox() {
         if(jQuery(this).is('button'))//keep $this if toggle is backwards
-            $this = jQuery(this);
-        $fixed = $this.parents('.jmayt-video-wrap');
+            var $this = jQuery(this);
+        var $fixed = $this.parents('.jmayt-video-wrap');
         if(!$fixed.hasClass('jmayt-fixed')){//make sure toggle is not backwards
             //distance the user has scrolled down the window (dynamic)
-            $scroll = jQuery(document).scrollTop();
+            var $scroll = jQuery(document).scrollTop();
             //get rid of scroll
-            $parent = $this.parents('.jmayt-item');
-            $parent_width = $parent.innerWidth();
-            $button = $this;
-            $z_index = $fixed.parents('.jmayt-outer').parents().add($fixed);
+            var $parent = $this.parents('.jmayt-item');
+            var $parent_width = $parent.innerWidth();
+            var $button = $this;
+            var $z_index = $fixed.parents('.jmayt-outer').parents().add($fixed);
             $parent.css('min-height', $parent.height() + 'px');
             $this.html('&#xe097;');
             //bring this section of the page to the top
@@ -42,9 +42,9 @@ function jmayt_toggle(){
             //first we make it absolute and give it a size
             $fixed.addClass('jmayt-fixed');
             //x and y coordinates of the div (static)
-            $pos = $parent.offset();
-            $pos_top = $pos.top;
-            $pos_left = $pos.left;
+            var $pos = $parent.offset();
+            var $pos_top = $pos.top;
+            var $pos_left = $pos.left;
             $fixed.css({
                 'width': ($parent_width) + 'px',
                 'height': ($parent_width)/1.7778 + 'px',
@@ -55,9 +55,9 @@ function jmayt_toggle(){
                 'width': jQuery(window).width() + 'px',
                 'height': window.innerHeight + 'px'
             });
-            $ratio = 9/16;
-            $video_win = $this.parents('.jma-responsive-wrap');
-            $window = jQuery(window);
+            var $ratio = 9/16;
+            var $video_win = $this.parents('.jma-responsive-wrap');
+            var $window = jQuery(window);
             if(($window.height()/$window.width()) < $ratio){
                 $video_win.css({
                     'width': ((($window.height()/$window.width())/$ratio)*100) + '%',
@@ -105,23 +105,23 @@ function jmayt_toggle(){
 function hold_fixed(){
     //using the class that is added on show_lightbox
     jQuery('.jmayt-fixed').each(function(){
-        $fixed_el = jQuery(this);
+        var $fixed_el = jQuery(this);
         //distance the use has scrolled down the window (dynamic)
-        $scroll = jQuery(document).scrollTop();
-        $parent = $fixed_el.closest('.jmayt-item');
+        var $scroll = jQuery(document).scrollTop();
+        var $parent = $fixed_el.closest('.jmayt-item');
         //x and y coordinates of the div (static)
-        $pos = $parent.offset();
-        $pos_top = $pos.top;
-        $pos_left = $pos.left;
+        var $pos = $parent.offset();
+        var $pos_top = $pos.top;
+        var $pos_left = $pos.left;
         $fixed_el.css({
             'top': -($pos_top - $scroll) + 'px',
             'left': -$pos_left + 'px',
             'width': jQuery(window).width() + 'px',
             'height': window.innerHeight + 'px'
         });
-        $ratio = 9/16;
-        $video_win = $fixed_el.find('.jma-responsive-wrap');
-        $window = jQuery(window);
+        var $ratio = 9/16;
+        var $video_win = $fixed_el.find('.jma-responsive-wrap');
+        var $window = jQuery(window);
         if(($window.height()/$window.width()) < $ratio){//for short window reduce wrap width
             $video_win.css({
                 'width': ((($window.height()/$window.width())/$ratio)*100) + '%',
@@ -158,7 +158,7 @@ var JmaytUtils = new JmaytUtils();
 function onYouTubePlayerAPIReady() {
     jQuery('body').addClass('jmayt_loaded');
     jQuery('.jmayt-overlay-button').each(function () {
-        $overlayButton = jQuery(this);
+        var $overlayButton = jQuery(this);
         if (JmaytUtils.isElementInView($overlayButton, false) && !$overlayButton.next().is('iframe')) {
             jmayt_setup_video($overlayButton);
         }
@@ -167,8 +167,8 @@ function onYouTubePlayerAPIReady() {
 
 function jmayt_setup_video($button) {
         // create the global player from the specific iframe (#video) jmayt-overlay-button
-        $button_id = $button.data('embedid');
-        $player = new YT.Player('video' + $button_id, {
+        var $button_id = $button.data('embedid');
+        var $player = new YT.Player('video' + $button_id, {
             videoId: $button_id,
             playerVars: {
                 rel: 0,
@@ -183,7 +183,7 @@ function jmayt_setup_video($button) {
 function jmayt_onPlayerReady(event) {
 
     // bind events
-    $iframe = event.target.a;
+    var $iframe = event.target.a;
     var $playButton = jQuery($iframe).prev();
     $playButton.bind("click", function() {
         jQuery(this).css('display', 'none');
