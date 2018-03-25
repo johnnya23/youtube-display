@@ -13,34 +13,38 @@ License: GPL2
  * function jma_yt_quicktags
  * add shortcode tags to text toolbar
  *
+
  * */
 add_filter('widget_text', 'do_shortcode');
-function jmayt_quicktags() {
-
-    if (wp_script_is('quicktags')){ ?>
+function jmayt_quicktags()
+{
+    if (wp_script_is('quicktags')) {
+        ?>
         <script language="javascript" type="text/javascript">
             QTags.addButton( 'JMA_yt_wrap', 'yt_wrap', '[yt_video_wrap width="100%" alignment="none"]', '[/yt_video_wrap]' );
             QTags.addButton( 'JMA_yt_video', 'yt_video', '[yt_video video_id="yt_video_id" width="100%" alignment="none"]' );
 
             QTags.addButton( 'JMA_yt_grid', 'yt_grid', '[yt_grid yt_list_id="yt_list_id"]' );
         </script>
-    <?php }
+    <?php
+    }
 }
-add_action('admin_print_footer_scripts','jmayt_quicktags');
+add_action('admin_print_footer_scripts', 'jmayt_quicktags');
 
-function jmayt_scripts() {
-
-    wp_enqueue_style( 'jmayt_bootstrap_css', plugins_url('/jmayt_bootstrap.css', __FILE__) );
-	wp_enqueue_script( 'jmayt_api','https://www.youtube.com/player_api', array( 'jquery' ) );
-    wp_enqueue_script( 'jmayt_js', plugins_url('/jmayt_js.js', __FILE__), array( 'jquery', 'jmayt_api' ) );
+function jmayt_scripts()
+{
+    wp_enqueue_style('jmayt_bootstrap_css', plugins_url('/jmayt_bootstrap.css', __FILE__));
+    wp_enqueue_script('jmayt_api', 'https://www.youtube.com/player_api', array( 'jquery' ));
+    wp_enqueue_script('jmayt_js', plugins_url('/jmayt_js.js', __FILE__), array( 'jquery', 'jmayt_api' ));
     $custom_css = jmayt_styles();
-    wp_add_inline_style( 'jmayt_bootstrap_css', $custom_css );
+    wp_add_inline_style('jmayt_bootstrap_css', $custom_css);
 }
 
-function jmayt_template_redirect(){
+function jmayt_template_redirect()
+{
     global $jmayt_options_array;
-    if(jmayt_detect_shortcode(array('yt_grid', 'yt_video', 'yt_video_wrap')) || $jmayt_options_array['uni']){
-        add_action( 'wp_enqueue_scripts', 'jmayt_scripts' );
+    if (jmayt_detect_shortcode(array('yt_grid', 'yt_video', 'yt_video_wrap')) || $jmayt_options_array['uni']) {
+        add_action('wp_enqueue_scripts', 'jmayt_scripts');
     }
 }
 add_action('template_redirect', 'jmayt_template_redirect');
@@ -54,33 +58,35 @@ add_action('template_redirect', 'jmayt_template_redirect');
  * @param int or object $post_item - the post to search (defaults to current)
  * @return boolean $return
  */
-function jmayt_detect_shortcode( $needle = '', $post_item = 0 ){
-
-    if($post_item){
-        if(is_object($post_item))
+function jmayt_detect_shortcode($needle = '', $post_item = 0)
+{
+    if ($post_item) {
+        if (is_object($post_item)) {
             $post = $post_item;
-        else
+        } else {
             $post = get_post($post_item);
-    }else{
+        }
+    } else {
         global $post;
     }
-    if(is_array($needle))
+    if (is_array($needle)) {
         $pattern = get_shortcode_regex($needle);
-    elseif(is_string($needle))
+    } elseif (is_string($needle)) {
         $pattern = get_shortcode_regex(array($needle));
-    else
+    } else {
         $pattern = get_shortcode_regex();
+    }
 
-    preg_match_all( '/'. $pattern .'/s', $post->post_content, $matches );
+    preg_match_all('/'. $pattern .'/s', $post->post_content, $matches);
 
 
-    if(//if shortcode(s) to be searched for were passed and not found $return false
+    if (//if shortcode(s) to be searched for were passed and not found $return false
 
-        array_key_exists( 2, $matches ) &&
-        count( $matches[2] )
-    ){
+        array_key_exists(2, $matches) &&
+        count($matches[2])
+    ) {
         $return = $matches;
-    }else{
+    } else {
         $return = false;
     }
 
@@ -88,14 +94,16 @@ function jmayt_detect_shortcode( $needle = '', $post_item = 0 ){
 }
 
 //helper function for jmayt_styles()
-function jmayt_output($inputs) {
+function jmayt_output($inputs)
+{
     $output = array();
-    foreach($inputs as $input){
+    foreach ($inputs as $input) {
         $numArgs = count($input);
-        if($numArgs < 2)
-            return;	//bounces input if no property => value pairs are present
+        if ($numArgs < 2) {
+            return;
+        }	//bounces input if no property => value pairs are present
         $pairs = array();
-        for($i = 1; $i < $numArgs; $i++){
+        for ($i = 1; $i < $numArgs; $i++) {
             $x = $input[$i];
             $pairs[] = array(
                 'property' => $x[0],
@@ -111,11 +119,12 @@ function jmayt_output($inputs) {
 //helper function for jmayt_styles()
 // media queries in format max(or min)-$width@$selector, .....
 // so we explode around @, then around - (first checking to see if @ symbol is present)
-function jmayt_build_css($css_values) {
+function jmayt_build_css($css_values)
+{
     $return = ' {}';
-    foreach($css_values as  $k => $css_value) {
-        $has_media_query = (strpos ( $k , '@' ));
-        if($has_media_query){
+    foreach ($css_values as  $k => $css_value) {
+        $has_media_query = (strpos($k, '@'));
+        if ($has_media_query) {
             $exploded = explode('@', $k);
             $media_query_array = explode('-', $exploded[0]);
             $k = $exploded[1];
@@ -123,12 +132,13 @@ function jmayt_build_css($css_values) {
             $return .= '@media (' . $media_query_array[0] . '-width:' . $media_query_array[1] . "px) {\n";
         }
         $return .= $k . "{\n";
-        foreach($css_value as $value){
-            if($value['value'])
+        foreach ($css_value as $value) {
+            if ($value['value']) {
                 $return .= $value['property'] . ': ' . $value['value'] . ";\n";
+            }
         }
         $return .= "}\n";
-        if($has_media_query){
+        if ($has_media_query) {
             $return .= "}\n";
         }
     }
@@ -138,50 +148,55 @@ $jmayt_db_option = 'jmayt_options_array';
 $jmayt_options_array = get_option($jmayt_db_option);
 $jmayt_api_code = $jmayt_options_array['api'];
 
-spl_autoload_register( 'jma_yt_autoloader' );
-function jma_yt_autoloader( $class_name ) {
-    if ( false !== strpos( $class_name, 'JMAYt' ) ) {
+spl_autoload_register('jma_yt_autoloader');
+function jma_yt_autoloader($class_name)
+{
+    if (false !== strpos($class_name, 'JMAYt')) {
         $classes_dir = realpath(plugin_dir_path(__FILE__));
         $class_file = $class_name . '.php';
         require_once $classes_dir . DIRECTORY_SEPARATOR . $class_file;
     }
 }
 
-function jmayt_clear_cache(){
+function jmayt_clear_cache()
+{
     global $wpdb;
     global $jmayt_db_option;
     $jmayt_options_array = get_option($jmayt_db_option);
-    $plugin_options = $wpdb->get_results( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '_transient_jmaytvideo%' OR option_name LIKE '_transient_timeout_jmaytvideo%'" );
-    foreach( $plugin_options as $option ) {
-        delete_option( $option->option_name );
+    $plugin_options = $wpdb->get_results("SELECT option_name FROM $wpdb->options WHERE option_name LIKE '_transient_jmaytvideo%' OR option_name LIKE '_transient_timeout_jmaytvideo%'");
+    foreach ($plugin_options as $option) {
+        delete_option($option->option_name);
     }
-    if($jmayt_options_array['cache_images']){
+    if ($jmayt_options_array['cache_images']) {
         jmayt_on_activation_wc();
-    }else{
+    } else {
         $files = glob(realpath(plugin_dir_path(__FILE__)) . DIRECTORY_SEPARATOR . 'overlays' . DIRECTORY_SEPARATOR . '*'); // get all file names
-        foreach($files as $file){ // iterate files
-            if(is_file($file))
-                unlink($file); // delete file
+        foreach ($files as $file) { // iterate files
+            if (is_file($file)) {
+                unlink($file);
+            } // delete file
         }
         jmayt_on_deactivation_dc();
     }
 }
-add_action( 'update_option_' . $jmayt_db_option, 'jmayt_clear_cache');
+add_action('update_option_' . $jmayt_db_option, 'jmayt_clear_cache');
 
-function jmayt_clear_function() {
+function jmayt_clear_function()
+{
     global $wpdb;
     $files = glob(realpath(plugin_dir_path(__FILE__)) . DIRECTORY_SEPARATOR . 'overlays' . DIRECTORY_SEPARATOR . '*'); // get all file names
-    foreach($files as $file){ // iterate files
-        if(is_file($file))
-            unlink($file); // delete file
+    foreach ($files as $file) { // iterate files
+        if (is_file($file)) {
+            unlink($file);
+        } // delete file
     }
-    $plugin_options = $wpdb->get_results( "SELECT option_name FROM $wpdb->options WHERE option_name LIKE '_transient_jmaytvideo%' OR option_name LIKE '_transient_timeout_jmaytvideo%'" );
-    foreach( $plugin_options as $option ) {
-        delete_option( $option->option_name );
+    $plugin_options = $wpdb->get_results("SELECT option_name FROM $wpdb->options WHERE option_name LIKE '_transient_jmaytvideo%' OR option_name LIKE '_transient_timeout_jmaytvideo%'");
+    foreach ($plugin_options as $option) {
+        delete_option($option->option_name);
     }
-    die(  header( 'Location:' . admin_url( 'options-general.php?page=jmayt_settings' )) );
+    die(header('Location:' . admin_url('options-general.php?page=jmayt_settings')));
 }
-add_action( 'admin_post_jmayt_clear_function', 'jmayt_clear_function'  );
+add_action('admin_post_jmayt_clear_function', 'jmayt_clear_function');
 
 /**
  * Build settings fields
@@ -195,8 +210,8 @@ $settings = array(
      * */
 
     'setup' => array(
-        'title'					=> __( 'Setup', 'jmayt_textdomain' ),
-        'description'			=> __( 'Setup options.', 'jmayt_textdomain' ),
+        'title'					=> __('Setup', 'jmayt_textdomain'),
+        'description'			=> __('Setup options.', 'jmayt_textdomain'),
 
         /*
          * fields for this section section
@@ -204,46 +219,46 @@ $settings = array(
         'fields'				=> array(
             array(
                 'id' 			=> 'api',
-                'label'			=> __( 'YouTube Api value' , 'jmayt_textdomain' ),
-                'description'	=> __( 'Api credentials for youtube <a target="_blank" href="https://console.developers.google.com/projectselector/apis/dashboard?organizationId=0">here</a>.', 'jmayt_textdomain' ),
+                'label'			=> __('YouTube Api value', 'jmayt_textdomain'),
+                'description'	=> __('Api credentials for youtube <a target="_blank" href="https://console.developers.google.com/projectselector/apis/dashboard?organizationId=0">here</a>.', 'jmayt_textdomain'),
                 'type'			=> 'text',
                 'default'		=> ''
             ),
             array(
                 'id' 			=> 'cache',
-                'label'			=> __( 'Cache Time' , 'jmayt_textdomain' ),
-                'description'	=> __( 'Frequency of checks back to YouTube for info. Larger number for quicker page loads and to avoid hitting YouTube Api limits (3600 = 1 hr or 0 for testing only).', 'jmayt_textdomain' ),
+                'label'			=> __('Cache Time', 'jmayt_textdomain'),
+                'description'	=> __('Frequency of checks back to YouTube for info. Larger number for quicker page loads and to avoid hitting YouTube Api limits (3600 = 1 hr or 0 for testing only).', 'jmayt_textdomain'),
                 'type'			=> 'number',
                 'default'		=> '3600'
             ),
             array(
                 'id' 			=> 'uni',
-                'label'			=> __( 'Universal Mode', 'jmayt_textdomain' ),
-                'description'	=> __( 'Load plugin script on all pages - not just ones where the plugin shortcode is detected. This is necessary if shortcode is used in a sidebar (widget area) or may be necessary with some themes or page builders', 'jmayt_textdomain' ),
+                'label'			=> __('Universal Mode', 'jmayt_textdomain'),
+                'description'	=> __('Load plugin script on all pages - not just ones where the plugin shortcode is detected. This is necessary if shortcode is used in a sidebar (widget area) or may be necessary with some themes or page builders', 'jmayt_textdomain'),
                 'type'			=> 'radio',
                 'options'		=> array( 0 => 'Limited' , 1 => 'Universal'),
                 'default'		=> 0
             ),
             array(
                 'id' 			=> 'dev',
-                'label'			=> __( 'Dev Mode', 'jmayt_textdomain' ),
-                'description'	=> __( 'Dev may allow plugin to function on Windows localhost (Use Production in production for security)', 'jmayt_textdomain' ),
+                'label'			=> __('Dev Mode', 'jmayt_textdomain'),
+                'description'	=> __('Dev may allow plugin to function on Windows localhost (Use Production in production for security)', 'jmayt_textdomain'),
                 'type'			=> 'radio',
                 'options'		=> array( 0 => 'Production' , 1 => 'Dev'),
                 'default'		=> 0
             ),
             array(
                 'id' 			=> 'cache_images',
-                'label'			=> __( 'Cache Images for lists', 'jmayt_textdomain' ),
-                'description'	=> __( '<span style="color:red">This option pulls thumbnail images from YouTube and stores them in the plugin for faster display of long lists. ACTIVATING THIS OPTION CAUSES THE PLUGIN TO TRY TO REWRITE .HTACCESS TO INCREASE MAX PAGE EXECUTION TIME TO 5 MINUTES. The first time a page with a large list loads the plugin will copy the YouTube thumbnail images dynamically. This means the first page load will be very slow. Thereafter the page will load thumbnails from the plugin folder (much faster). THIS OPTION MAY NOT WORK CORRECTLY DEPENDING ON YOUR HOSTING ENVIRONMENT (you can always switch back to conventional loading)</span>', 'jmayt_textdomain' ),
+                'label'			=> __('Cache Images for lists', 'jmayt_textdomain'),
+                'description'	=> __('<span style="color:red">This option pulls thumbnail images from YouTube and stores them in the plugin for faster display of long lists. ACTIVATING THIS OPTION CAUSES THE PLUGIN TO TRY TO REWRITE .HTACCESS TO INCREASE MAX PAGE EXECUTION TIME TO 5 MINUTES. The first time a page with a large list loads the plugin will copy the YouTube thumbnail images dynamically. This means the first page load will be very slow. Thereafter the page will load thumbnails from the plugin folder (much faster). THIS OPTION MAY NOT WORK CORRECTLY DEPENDING ON YOUR HOSTING ENVIRONMENT (you can always switch back to conventional loading)</span>', 'jmayt_textdomain'),
                 'type'			=> 'radio',
                 'options'		=> array( 0 => 'Don\'t cache', 1 => 'Cache images'),
                 'default'		=> 0
             ),
             array(
                 'id' 			=> 'clear_images',
-                'label'			=> __( 'Clear Images for lists', 'jmayt_textdomain' ),
-                'description'	=> __( 'Clear all images. This is the only way to get renewed images from YouTube. After clearing (or toggling the cache option above) you may want to load pages with long YouTube Lists as the first load will take a long time.', 'jmayt_textdomain' ),
+                'label'			=> __('Clear Images for lists', 'jmayt_textdomain'),
+                'description'	=> __('Clear all images. This is the only way to get renewed images from YouTube. After clearing (or toggling the cache option above) you may want to load pages with long YouTube Lists as the first load will take a long time.', 'jmayt_textdomain'),
                 'type'			=> 'submit'/* submit is one time only hardcoded placehoder */
             )
         )
@@ -252,8 +267,8 @@ $settings = array(
      * start of a new section
      * */
     'display' => array(
-        'title'					=> __( 'YouTube Display Options', 'jmayt_textdomain' ),
-        'description'			=> __( 'These are some default display settings (they can be overridden with shortcode parameters which are shown in parens)', 'jmayt_textdomain' ),
+        'title'					=> __('YouTube Display Options', 'jmayt_textdomain'),
+        'description'			=> __('These are some default display settings (they can be overridden with shortcode parameters which are shown in parens)', 'jmayt_textdomain'),
 
         /*
          * fields for this section section
@@ -261,59 +276,59 @@ $settings = array(
         'fields'				=> array(
             array(
                 'id' 			=> 'item_font_color',
-                'label'			=> __( 'Font color for YouTube item titles', 'jmayt_textdomain' ),
-                'description'	=> __( 'Null your theme\'s title color (item_font_color)', 'jmayt_textdomain' ),
+                'label'			=> __('Font color for YouTube item titles', 'jmayt_textdomain'),
+                'description'	=> __('Null your theme\'s title color (item_font_color)', 'jmayt_textdomain'),
                 'type'			=> 'color',
                 'default'		=> 0
             ),
             array(
                 'id' 			=> 'item_font_size',
-                'label'			=> __( 'Font size for YouTube item titles', 'jmayt_textdomain' ),
-                'description'	=> __( '0 your theme\'s title size (item_font_size)', 'jmayt_textdomain' ),
+                'label'			=> __('Font size for YouTube item titles', 'jmayt_textdomain'),
+                'description'	=> __('0 your theme\'s title size (item_font_size)', 'jmayt_textdomain'),
                 'type'			=> 'number',
                 'default'		=> 0
             ),
             array(
                 'id' 			=> 'item_font_alignment',
-                'label'			=> __( 'Font alignment for YouTube item titles', 'jmayt_textdomain' ),
-                'description'	=> __( '(item_font_alignment)', 'jmayt_textdomain' ),
+                'label'			=> __('Font alignment for YouTube item titles', 'jmayt_textdomain'),
+                'description'	=> __('(item_font_alignment)', 'jmayt_textdomain'),
                 'type'			=> 'radio',
                 'options'		=> array( 'left' => 'left' , 'center' => 'center', 'right' => 'right'),
                 'default'		=> 'left'
             ),
             array(
                 'id' 			=> 'item_font_length',
-                'label'			=> __( 'The maximun number of characters for YouTube item titles', 'jmayt_textdomain' ),
-                'description'	=> __( '0 for whole title (item_font_length)', 'jmayt_textdomain' ),
+                'label'			=> __('The maximun number of characters for YouTube item titles', 'jmayt_textdomain'),
+                'description'	=> __('0 for whole title (item_font_length)', 'jmayt_textdomain'),
                 'type'			=> 'number',
                 'default'		=> 0
             ),
             array(
                 'id' 			=> 'item_bg',
-                'label'			=> __( 'Background color for YouTube items', 'jmayt_textdomain' ),
-                'description'	=> __( 'Null for no bg (item_bg)', 'jmayt_textdomain' ),
+                'label'			=> __('Background color for YouTube items', 'jmayt_textdomain'),
+                'description'	=> __('Null for no bg (item_bg)', 'jmayt_textdomain'),
                 'type'			=> 'color',
                 'default'		=> 0
             ),
             array(
                 'id' 			=> 'item_border',
-                'label'			=> __( 'Border color for YouTube items', 'jmayt_textdomain' ),
-                'description'	=> __( 'Null for no border (item_border)', 'jmayt_textdomain' ),
+                'label'			=> __('Border color for YouTube items', 'jmayt_textdomain'),
+                'description'	=> __('Null for no border (item_border)', 'jmayt_textdomain'),
                 'type'			=> 'color',
                 'default'		=> 0
             ),
             array(
                 'id' 			=> 'button_font',
                 'class'         => 'picker',
-                'label'			=> __( 'Button arrow color', 'jmayt_textdomain' ),
-                'description'	=> __( 'for expansion buttons on upper left of YouTube items (button_font)', 'jmayt_textdomain' ),
+                'label'			=> __('Button arrow color', 'jmayt_textdomain'),
+                'description'	=> __('for expansion buttons on upper left of YouTube items (button_font)', 'jmayt_textdomain'),
                 'type'			=> 'color',
                 'default'		=> '#21759B'
             ),
             array(
                 'id' 			=> 'button_bg',
-                'label'			=> __( 'Button background color', 'jmayt_textdomain' ),
-                'description'	=> __( 'for expansion buttons on upper leftof YouTube items (button_bg)', 'jmayt_textdomain' ),
+                'label'			=> __('Button background color', 'jmayt_textdomain'),
+                'description'	=> __('for expansion buttons on upper leftof YouTube items (button_bg)', 'jmayt_textdomain'),
                 'type'			=> 'color',
                 'default'		=> '#cbe0e9'
             )
@@ -324,8 +339,8 @@ $settings = array(
      * start of a new section
      * */
     'grid' => array(
-        'title'					=> __( 'YouTube Grid Options', 'jmayt_textdomain' ),
-        'description'			=> __( 'These are some grid specific settings (they can be overridden with shortcode parameters which are shown in parens)', 'jmayt_textdomain' ),
+        'title'					=> __('YouTube Grid Options', 'jmayt_textdomain'),
+        'description'			=> __('These are some grid specific settings (they can be overridden with shortcode parameters which are shown in parens)', 'jmayt_textdomain'),
 
         /*
          * fields for this section section
@@ -333,53 +348,53 @@ $settings = array(
         'fields'				=> array(
             array(
                 'id' 			=> 'query_max',
-                'label'			=> __( 'The maximun number of entries to show in the grid', 'jmayt_textdomain' ),
-                'description'	=> __( '0 for all (query_max) - (query_offset) in for shortcode offset', 'jmayt_textdomain' ),
+                'label'			=> __('The maximun number of entries to show in the grid', 'jmayt_textdomain'),
+                'description'	=> __('0 for all (query_max) - (query_offset) in for shortcode offset', 'jmayt_textdomain'),
                 'type'			=> 'number',
                 'default'		=> 50
             ),
             array(
                 'id' 			=> 'item_gutter',
-                'label'			=> __( 'Grid horizontal spacing', 'jmayt_textdomain' ),
-                'description'	=> __( 'in px between YouTube grid items - best results even number between 0 and 30 (item_gutter)', 'jmayt_textdomain' ),
+                'label'			=> __('Grid horizontal spacing', 'jmayt_textdomain'),
+                'description'	=> __('in px between YouTube grid items - best results even number between 0 and 30 (item_gutter)', 'jmayt_textdomain'),
                 'type'			=> 'number',
                 'default'		=> '30'
             ),
             array(
                 'id' 			=> 'item_spacing',
-                'label'			=> __( 'Grid vertical spacing', 'jmayt_textdomain' ),
-                'description'	=> __( 'in px between YouTube grid items (item_spacing)', 'jmayt_textdomain' ),
+                'label'			=> __('Grid vertical spacing', 'jmayt_textdomain'),
+                'description'	=> __('in px between YouTube grid items (item_spacing)', 'jmayt_textdomain'),
                 'type'			=> 'number',
                 'default'		=> '15'
             ),
             array(
                 'id' 			=> 'lg_cols',
-                'label'			=> __( 'Large device columns (lg_cols)', 'jmayt_textdomain' ),
-                'description'	=> __( 'For window width 1200+ px (inherit uses value from setting below).', 'jmayt_textdomain' ),
+                'label'			=> __('Large device columns (lg_cols)', 'jmayt_textdomain'),
+                'description'	=> __('For window width 1200+ px (inherit uses value from setting below).', 'jmayt_textdomain'),
                 'type'			=> 'select',
                 'options'		=> $col_array,
                 'default'		=> 0
             ),
             array(
                 'id' 			=> 'md_cols',
-                'label'			=> __( 'Medium device columns (md_cols)', 'jmayt_textdomain' ),
-                'description'	=> __( 'For window width 992+ px (inherit uses value from setting below).', 'jmayt_textdomain' ),
+                'label'			=> __('Medium device columns (md_cols)', 'jmayt_textdomain'),
+                'description'	=> __('For window width 992+ px (inherit uses value from setting below).', 'jmayt_textdomain'),
                 'type'			=> 'select',
                 'options'		=> $col_array,
                 'default'		=> 0
             ),
             array(
                 'id' 			=> 'sm_cols',
-                'label'			=> __( 'Small device columns (sm_cols)', 'jmayt_textdomain' ),
-                'description'	=> __( 'For window width 768+ px (inherit uses value from setting below).', 'jmayt_textdomain' ),
+                'label'			=> __('Small device columns (sm_cols)', 'jmayt_textdomain'),
+                'description'	=> __('For window width 768+ px (inherit uses value from setting below).', 'jmayt_textdomain'),
                 'type'			=> 'select',
                 'options'		=> $col_array,
                 'default'		=> '3'
             ),
             array(
                 'id' 			=> 'xs_cols',
-                'label'			=> __( 'Extra small device columns (xs_cols)', 'jmayt_textdomain' ),
-                'description'	=> __( 'For window width -768 px.', 'jmayt_textdomain' ),
+                'label'			=> __('Extra small device columns (xs_cols)', 'jmayt_textdomain'),
+                'description'	=> __('For window width -768 px.', 'jmayt_textdomain'),
                 'type'			=> 'select',
                 'options'		=> $xs_col,
                 'default'		=> '2'
@@ -390,7 +405,7 @@ $settings = array(
 
 
 
-if( is_admin() )
+if (is_admin()) {
     $jma_settings_page = new JMAYtSettings(
         array(
             'base' => 'jmayt',
@@ -398,6 +413,7 @@ if( is_admin() )
             'db_option' => $jmayt_db_option,
             'settings' => $settings)
         );
+}
 
 /**
  * function jmayt_styles add the plugin specific styles
@@ -408,10 +424,10 @@ function jmayt_styles()
     global $jmayt_options_array;
     $item_gutter = floor($jmayt_options_array['item_gutter'] / 2);
     // FORMAT FOR INPUT
-// $jmayt_styles[] = array($selector, array($property, $value)[,array($property, $value)...])
+    // $jmayt_styles[] = array($selector, array($property, $value)[,array($property, $value)...])
 
-//in format above format media queries  i.e. max-768@$selector, ...
-// $jmayt_styles[] = array(max(or min)-$width@$selector, array($property, $value)[,array($property, $value)...])
+    //in format above format media queries  i.e. max-768@$selector, ...
+    // $jmayt_styles[] = array(max(or min)-$width@$selector, array($property, $value)[,array($property, $value)...])
     $jmayt_styles[10] = array('div.jmayt-list-wrap',
         array('clear', 'both'),
         array('margin-left', -$item_gutter . 'px'),
@@ -436,8 +452,9 @@ function jmayt_styles()
         );
     }
     $font_size = $lg_font_size = $jmayt_options_array['item_font_size'];
-    if ($font_size)
+    if ($font_size) {
         $font_size = ceil($font_size * 0.7);
+    }
     $font_size_str = $jmayt_options_array['item_font_size'] ? array('font-size', $font_size . 'px')
         : array();
     $lg_font_size_str = $jmayt_options_array['item_font_size'] ? array('font-size', $lg_font_size . 'px')
@@ -628,14 +645,15 @@ box-sizing: border-box;
     return $css;
 }
 
-function jmayt_sanitize_array($inputs){
-    if(is_array($inputs) && count($inputs)){
-    foreach($inputs as $i => $input){
-        $i = sanitize_text_field($i);
-        $input = sanitize_text_field($input);
-        $output[$i] =  $input;
-    }
-    }else{
+function jmayt_sanitize_array($inputs)
+{
+    if (is_array($inputs) && count($inputs)) {
+        foreach ($inputs as $i => $input) {
+            $i = sanitize_text_field($i);
+            $input = sanitize_text_field($input);
+            $output[$i] =  $input;
+        }
+    } else {
         $output = array();
     }
     return $output;
@@ -646,15 +664,16 @@ function jmayt_sanitize_array($inputs){
  * @param array $atts - the shortcode attributes
  * @return the shortcode string
  */
-function jma_yt_grid($atts){
+function jma_yt_grid($atts)
+{
     global $jmayt_options_array;
     $jmayt_api_code = $jmayt_options_array['api'];
     $atts = jmayt_sanitize_array($atts);
 
     $you_tube_list = new JMAYtList($atts['yt_list_id'], $jmayt_api_code);
     //processing plugin options - form array of column atts and set defaults
-    foreach($jmayt_options_array as $i => $option){
-        if((strpos($i, '_cols') !== false) && $option){
+    foreach ($jmayt_options_array as $i => $option) {
+        if ((strpos($i, '_cols') !== false) && $option) {
             $i = str_replace('_cols', '', $i);
             $has_break .= ' has-' . $i;
             $responsive_cols[$i] = $option;
@@ -677,14 +696,17 @@ function jma_yt_grid($atts){
     }
     $max = 10000;
     $offset = 0;
-    if($jmayt_options_array['query_max'] > 0)
+    if ($jmayt_options_array['query_max'] > 0) {
         $max = $jmayt_options_array['query_max'];
+    }
 
-    if(isset($atts['query_max']))
+    if (isset($atts['query_max'])) {
         $max = $atts['query_max'];
+    }
 
-    if(isset($atts['query_offset']))
+    if (isset($atts['query_offset'])) {
         $offset = $atts['query_offset'];
+    }
 
     ob_start();
     $attributes = array(
@@ -706,7 +728,7 @@ function jma_yt_grid($atts){
 
     return str_replace("\r\n", '', $x);
 }
-add_shortcode('yt_grid','jma_yt_grid');
+add_shortcode('yt_grid', 'jma_yt_grid');
 
 
 
@@ -716,7 +738,8 @@ add_shortcode('yt_grid','jma_yt_grid');
  * @param string $url
  * @return string YouTube video id or FALSE if none found.
  */
-function jmayt_id_from_url($url) {
+function jmayt_id_from_url($url)
+{
     if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match)) {
         $id = $match[1];
         return $id;
@@ -731,7 +754,8 @@ function jmayt_id_from_url($url) {
  * (depending on whether its the wrap shortcode)
  * @return the shortcode string
  */
-function jma_yt_video_wrap_html($atts, $video_id){
+function jma_yt_video_wrap_html($atts, $video_id)
+{
     global $jmayt_api_code;
     $atts = jmayt_sanitize_array($atts);
     $yt_video = new JMAYtVideo(sanitize_text_field($video_id), $jmayt_api_code);
@@ -742,9 +766,8 @@ function jma_yt_video_wrap_html($atts, $video_id){
         'style' => $style['display'] . $atts['style']
     );
     echo '<div ';
-    foreach($attributes as $name => $attribute){
+    foreach ($attributes as $name => $attribute) {
         echo $name . '="' . $attribute . '" ';
-
     }
     echo '>';
     echo $yt_video->markup();
@@ -756,7 +779,8 @@ function jma_yt_video_wrap_html($atts, $video_id){
  * @uses jma_yt_video_wrap_html
  * @return mixed
  */
-function jma_yt_video($atts){
+function jma_yt_video($atts)
+{
     $video_id = $atts['video_id'];
     ob_start();
     jma_yt_video_wrap_html($atts, $video_id);
@@ -764,7 +788,7 @@ function jma_yt_video($atts){
     ob_end_clean();
     return str_replace("\r\n", '', $x);
 }
-add_shortcode('yt_video','jma_yt_video');
+add_shortcode('yt_video', 'jma_yt_video');
 
 /**
  * @param $atts
@@ -772,7 +796,8 @@ add_shortcode('yt_video','jma_yt_video');
  * @uses jma_yt_video_wrap_html
  * @return mixed
  */
-function jma_yt_video_wrap($atts, $content = null){
+function jma_yt_video_wrap($atts, $content = null)
+{
     $video_id = jmayt_id_from_url($content);
     ob_start();
     jma_yt_video_wrap_html($atts, $video_id);
@@ -780,12 +805,12 @@ function jma_yt_video_wrap($atts, $content = null){
     ob_end_clean();
     return str_replace("\r\n", '', $x);
 }
-add_shortcode('yt_video_wrap','jma_yt_video_wrap');
+add_shortcode('yt_video_wrap', 'jma_yt_video_wrap');
 
 
 
-function jmayt_on_activation_wc(){
-
+function jmayt_on_activation_wc()
+{
     $jmayttxt = "
 	# WP Maximum Execution Time Exceeded
 	<IfModule mod_php5.c>
@@ -794,16 +819,17 @@ function jmayt_on_activation_wc(){
 
     $htaccess = get_home_path().'.htaccess';
     $contents = @file_get_contents($htaccess);
-    if(!strpos($htaccess,$jmayttxt))
-        file_put_contents($htaccess,$contents.$jmayttxt);
+    if (!strpos($htaccess, $jmayttxt)) {
+        file_put_contents($htaccess, $contents.$jmayttxt);
+    }
 }
 
 
 
 /* On deactivation delete code (dc) from htaccess file */
 
-function jmayt_on_deactivation_dc(){
-
+function jmayt_on_deactivation_dc()
+{
     $jmayttxt = "
 	# WP Maximum Execution Time Exceeded
 	<IfModule mod_php5.c>
@@ -812,11 +838,10 @@ function jmayt_on_deactivation_dc(){
 
     $htaccess = get_home_path().'.htaccess';
     $contents = @file_get_contents($htaccess);
-    file_put_contents($htaccess,str_replace($jmayttxt,'',$contents));
-
+    file_put_contents($htaccess, str_replace($jmayttxt, '', $contents));
 }
 
 
 //register_activation_hook(   __FILE__, 'jmayt_on_activation_wc' );
 
-register_deactivation_hook( __FILE__, 'jmayt_on_deactivation_dc' );
+register_deactivation_hook(__FILE__, 'jmayt_on_deactivation_dc');
