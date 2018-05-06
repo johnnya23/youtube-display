@@ -2,8 +2,8 @@
 Contributors: johnnya23
 Tags: youtube, schema, youtube gallery, youtube playlist, youtube embed, youtube seo, youtube channel, responsive youtube
 Requires at least: 4.0
-Tested up to: 4.9.1
-Stable tag: 1.3
+Tested up to: 4.9.5
+Stable tag: 1.3.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -91,7 +91,7 @@ meta itemprop="publisher" content=""
 meta itemprop="description" content=""
 meta itemprop="thumbnailUrl" content=""
 meta itemprop="embedURL" content=""
-meta itemprop="uploadDate" content="" 
+meta itemprop="uploadDate" content=""
 With content values pulled from the YouTube API.
 
 = My lists and videos are showing, but the display is off. What gives? =
@@ -166,3 +166,10 @@ https://bgrins.github.io/spectrum/
 
 = 1.2.4 =
 * overlay fixes
+
+= 1.3 =
+* add query_offset and query_max values
+* allow 50+ results to be returned
+
+= 1.3.1 =
+* fix array issues in settings class
