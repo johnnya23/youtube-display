@@ -196,6 +196,7 @@ function jmayt_onPlayerReady(event) {
     // bind events
     $iframe = event.target.a;
     var $playButton = jQuery($iframe).prev();
+    $playButton.addClass('jmayt-ready');
     $playButton.bind("click", function() {
         jQuery(this).css('display', 'none');
         event.target.playVideo();
@@ -207,7 +208,7 @@ function jmayt_onPlayerReady(event) {
 jQuery(window).scroll(function() {
     hold_fixed();
     if (jQuery('body').hasClass('jmayt_loaded'))
-        onYouTubePlayerAPIReady()
+        onYouTubePlayerAPIReady();
 });
 
 jQuery(document).ready(function() {
