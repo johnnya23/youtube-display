@@ -173,3 +173,4 @@ https://bgrins.github.io/spectrum/
 
 = 1.3.1 =
 * fix array issues in settings class
+* delay play icons until videos are ready on cached images setup
