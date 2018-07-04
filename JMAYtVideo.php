@@ -1,25 +1,27 @@
 <?php
-class JMAYtVideo {
-    var $id;
-    var $api;
-    var $col_space;
-    var $box_string;
-    var $button_string;
-    var $h3_string;
-    var $trans_atts_id;
-    var $item_font_length;
+class JMAYtVideo
+{
+    public $id;
+    public $api;
+    public $col_space;
+    public $box_string;
+    public $button_string;
+    public $h3_string;
+    public $trans_atts_id;
+    public $item_font_length;
 
-    public function __construct($id_code, $api_code){
+    public function __construct($id_code, $api_code)
+    {
         $this->api = $api_code;
         $this->id = $id_code;
-
     }
-    protected function curl($url){
+    protected function curl($url)
+    {
         global $jmayt_options_array;
         $curl = curl_init($url);
 
         $whitelist = array('127.0.0.1', "::1");
-        if($jmayt_options_array['dev'] && in_array($_SERVER['REMOTE_ADDR'], $whitelist)){
+        if ($jmayt_options_array['dev'] && in_array($_SERVER['REMOTE_ADDR'], $whitelist)) {
             curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);//for localhost
             curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);//for localhost
         }
@@ -29,11 +31,13 @@ class JMAYtVideo {
         $result = curl_exec($curl);
         curl_close($curl);
         $return = json_decode($result, true);
-        if(!$return || array_key_exists ('error', $return)){
-            if(is_array($return) && array_key_exists ('error', $return))
-                $return = $return['error']['errors'][0]['reason'];//keyInvalid, playlistNotFound, accessNotConfigured, ipRefererBlocked, keyExpired
-            else
+        if (!$return || array_key_exists('error', $return)) {
+            if (is_array($return) && array_key_exists('error', $return)) {
+                $return = $return['error']['errors'][0]['reason'];
+            }//keyInvalid, playlistNotFound, accessNotConfigured, ipRefererBlocked, keyExpired
+            else {
                 $return = 'unknown';
+            }
         }
         return $return;
     }
@@ -45,8 +49,9 @@ class JMAYtVideo {
      * @return array the snippet array for an individual video
      *
      * */
-    private function video_snippet($id){
-        if(substr( $id, 0, 4 ) === "http"){
+    private function video_snippet($id)
+    {
+        if (substr($id, 0, 4) === "http") {
             if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match)) {
                 $id = $match[1];
             }
@@ -54,12 +59,14 @@ class JMAYtVideo {
         $snippet = array();
         $youtube = 'https://www.googleapis.com/youtube/v3/videos?part=snippet&id=' . $id . '&fields=items%2Fsnippet&key=' . $this->api;
         $curl_array = JMAYtVideo::curl($youtube);
-        if(is_array($curl_array)){
-            if(!count($curl_array['items']))
+        if (is_array($curl_array)) {
+            if (!count($curl_array['items'])) {
                 return 'videoNotFound';
+            }
             $snippet = $curl_array['items'][0]['snippet'];
-        }elseif(is_string($curl_array))
+        } elseif (is_string($curl_array)) {
             $snippet = $curl_array;
+        }
         return $snippet;
     }
 
@@ -70,15 +77,16 @@ class JMAYtVideo {
  * @return $yt_meta_array_items array schema values mapped to schema properties
  *
  * */
-    private function map_meta($snippet, $id){//map youtude array to schema proprties
+    private function map_meta($snippet, $id)
+    {//map youtude array to schema proprties  interactionCount duration
         $yt_meta_array_items['name'] = $snippet['title'];
-        $yt_meta_array_items['publisher'] = $snippet['channelTitle'];
+        $yt_meta_array_items['pub_name'] = $snippet['channelTitle'];
         $yt_meta_array_items['description'] = $snippet['description'];
         $yt_meta_array_items['thumbnailUrl'] = $snippet['thumbnails']['default']['url'];
         $yt_meta_array_items['standardUrl'] = $snippet['thumbnails']['standard']['url'];
         $yt_meta_array_items['embedURL'] = 'https://www.youtube.com/embed/' . $id;
         $yt_meta_array_items['uploadDate'] = $snippet['publishedAt'];
-        return $yt_meta_array_items;
+        return apply_filters('jmaty_meta_array_items', $yt_meta_array_items);
     }
 
     /*
@@ -90,7 +98,8 @@ class JMAYtVideo {
      * to shortcode function
      *
      * */
-    public function process_display_atts($atts){
+    public function process_display_atts($atts)
+    {
         $this->col_space =
         $this->box_string =
         $this->button_string =
@@ -101,21 +110,23 @@ class JMAYtVideo {
         //the relavent atributes to check for values
         $display_att_list = array( 'item_font_color', 'item_font_size', 'item_font_alignment', 'item_font_length', 'item_bg', 'item_border', 'item_gutter','item_spacing','button_font','button_bg', 'width', 'alignment' );
         //produce $display_atts with relavent values (if any)
-        foreach($atts as $index => $att){
-            if ( in_array( $index, $display_att_list ) ) {
+        foreach ($atts as $index => $att) {
+            if (in_array($index, $display_att_list)) {
                 $trans_atts_id .= $index . $att;
                 $display_atts[$index] = $att;
             }
         }
         //check for values and process producing style strings for each
-        if(count($display_atts)){
+        if (count($display_atts)) {
             extract($display_atts);
             $this->trans_atts_id = $trans_atts_id;
             //number of characters in h3
-            if(isset($item_font_length)) $this->item_font_length = $item_font_length;
+            if (isset($item_font_length)) {
+                $this->item_font_length = $item_font_length;
+            }
             //box gutter and vertical spacing
-            if($item_gutter || $item_spacing){
-                if($item_gutter){
+            if ($item_gutter || $item_spacing) {
+                if ($item_gutter) {
                     $item_gutter = floor($item_gutter/2);
                     $return['gutter'] = 'margin-left:-' . $item_gutter . 'px;margin-right:-' . $item_gutter . 'px;';
                 }
@@ -127,9 +138,9 @@ class JMAYtVideo {
                 $this->col_space = $col_space;
             }
             //single box width and alignment
-            if($width || $alignment){
+            if ($width || $alignment) {
                 $return['display'] = $width? 'width:' . $width . ';': '';
-                if($alignment == 'right' || $alignment == 'left') {
+                if ($alignment == 'right' || $alignment == 'left') {
                     $return['display'] .= 'float:' . $alignment . ';';
                     $return['display'] .= 'margin-top: 5px;';
                     $op = $alignment == 'left'? 'right':'left';
@@ -137,7 +148,7 @@ class JMAYtVideo {
                 }
             }
             //single or list box border and bg
-            if($item_bg || $item_border){
+            if ($item_bg || $item_border) {
                 $bg = $item_bg? 'background-color:' . $item_bg . ';':'';
                 $border = $item_border? 'border:solid 2px ' . $item_border . '':'';
                 $format = ' style="%s%s" ';
@@ -145,7 +156,7 @@ class JMAYtVideo {
                 $this->box_string = $box_string;
             }
             //expansion button font color and bg
-            if($button_font || $button_bg){
+            if ($button_font || $button_bg) {
                 $color = $button_font? 'color:' . $button_font . ';':'';
                 $bg = $button_bg? 'background-color:' . $button_bg . ';':'';
                 $format = ' style="%s%s" ';
@@ -153,7 +164,7 @@ class JMAYtVideo {
                 $this->button_string = $button_string;
             }
             //h3 color size and align
-            if($item_font_color || $item_font_size || $item_font_alignment){
+            if ($item_font_color || $item_font_size || $item_font_alignment) {
                 $color = $item_font_color? 'color:' . $item_font_color . ';':'';
                 $size = $item_font_size? 'font-size:' . $item_font_size . 'px;':'';
                 $align = $item_font_alignment? 'text-align:' . $item_font_alignment . ';':'';
@@ -170,15 +181,30 @@ class JMAYtVideo {
      * returns schema html from $yt_meta_array_items array (see above)
      *
  * */
-    function jma_youtube_schema_html($yt_meta_array_items){
+    public function jma_youtube_schema_html($yt_meta_array_items)
+    {
+        $pub = $return = '';
+        foreach ($yt_meta_array_items as $prop => $yt_meta_array_item) {
+            if ($prop != 'standardUrl') {
+                if (substr($prop, 0, 4) != 'pub_') {
 
-        foreach($yt_meta_array_items as $prop => $yt_meta_array_item)
-            $return .= '<meta itemprop="' . $prop . '" content="' . str_replace('"', '\'',$yt_meta_array_item)   . '" />';
+                    //$prop = str_replace('pub_', '', $prop);
+                    $return .= '<meta itemprop="' . $prop . '" content="' . str_replace('"', '\'', $yt_meta_array_item)   . '" />';
+                } else {
+                    $prop = str_replace('pub_', '', $prop);
+                    $pub .=  '<meta itemprop="' . $prop . '" content="' . str_replace('"', '\'', $yt_meta_array_item)   . '" />';
+                }
+            }
+            if ($pub) {
+                $return .= '<div itemprop="publisher" itemscope itemtype="https://schema.org/Organization">' . $pub . '</div>';
+            }
+        }
         return $return;
     }
 
 
-    protected function error_handler($string){
+    protected function error_handler($string)
+    {
         switch ($string) {//keyInvalid, playlistNotFound, accessNotConfigured or quotaExceeded, ipRefererBlocked, keyExpired, videoNotFound
             case 'keyInvalid':
             case 'keyExpired':
@@ -230,49 +256,50 @@ class JMAYtVideo {
      * returns video box html
      *
     * */
-    protected function single_html($id, $list = false){
+    protected function single_html($id, $list = false)
+    {
         global $jmayt_options_array;
         $snippet = JMAYtVideo::video_snippet($id);
-        if(is_string($snippet)){
+        if (is_string($snippet)) {
             return JMAYtVideo::error_handler($snippet);
-        }else{
-        $meta_array = JMAYtVideo::map_meta($snippet, $id);
-        $h3_title = $meta_array['name'];
-        $elipsis = '';
-        if($this->item_font_length == -23  && $jmayt_options_array['item_font_length']){
-            $length = $jmayt_options_array['item_font_length'];
-        }elseif($this->item_font_length > 0){
-            $length = $this->item_font_length;
-        }else{
-            $length = 0;
-        }
-        if($length && (strlen($meta_array['name']) > $length)){
-            $h3_title = wordwrap($meta_array['name'], $length);
-            $h3_title = substr($h3_title, 0, strpos($h3_title, "\n"));
-            $elipsis = '&nbsp;...';
-        }
-        $return .= '<div class="jmayt-item-wrap"' . $this->box_string . '>';
-        $return .= '<div class="jmayt-item">';
-        $return .= '<div class="jmayt-video-wrap">';
-        $return .= '<div class="jma-responsive-wrap" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">';
-        $return .= '<button class="jmayt-btn jmayt-sm" ' . $this->button_string . '>&#xe140;</button>';
-        $return .= JMAYtVideo::jma_youtube_schema_html($meta_array);
-        if(!$list || !$jmayt_options_array['cache_images']){// single video or image caching off
-            $return .=  '<iframe src="' . $meta_array['embedURL'] . '?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>';
-        }else{
-            $overlay = new JMAYtOverlay(array($meta_array['standardUrl'], $meta_array['thumbnailUrl']), $id);
-            $image_url = $overlay->get_url();
-            $return .= '<button class="jmayt-overlay-button" data-embedid="' . $id . '"><img src="' . $image_url . '"/></button>';
-            $return .=  '<div id="video' . $id . '" class="jmayt-hidden-iframe"></div>';
-        }
-        $return .= '</div><!--jma-responsive-wrap-->';
-        $return .= '</div><!--yt-video-wrap-->';
-        $return .= '<div class="jmayt-text-wrap">';
-        $return .= '<h3 class="jmayt-title" ' . $this->h3_string . '>' . $h3_title . $elipsis . '</h3>';
-        $return .= '</div><!--jmayt-text-wrap-->';
-        $return .= '</div><!--yt-item-->';
-        $return .= '</div><!--yt-item-wrap-->';
-        return $return;
+        } else {
+            $meta_array = JMAYtVideo::map_meta($snippet, $id);
+            $h3_title = $meta_array['name'];
+            $elipsis = '';
+            if ($this->item_font_length == -23  && $jmayt_options_array['item_font_length']) {
+                $length = $jmayt_options_array['item_font_length'];
+            } elseif ($this->item_font_length > 0) {
+                $length = $this->item_font_length;
+            } else {
+                $length = 0;
+            }
+            if ($length && (strlen($meta_array['name']) > $length)) {
+                $h3_title = wordwrap($meta_array['name'], $length);
+                $h3_title = substr($h3_title, 0, strpos($h3_title, "\n"));
+                $elipsis = '&nbsp;...';
+            }
+            $return .= '<div class="jmayt-item-wrap"' . $this->box_string . '>';
+            $return .= '<div class="jmayt-item">';
+            $return .= '<div class="jmayt-video-wrap">';
+            $return .= '<div class="jma-responsive-wrap" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">';
+            $return .= '<button class="jmayt-btn jmayt-sm" ' . $this->button_string . '>&#xe140;</button>';
+            $return .= JMAYtVideo::jma_youtube_schema_html($meta_array);
+            if (!$list || !$jmayt_options_array['cache_images']) {// single video or image caching off
+                $return .=  '<iframe src="' . $meta_array['embedURL'] . '?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>';
+            } else {
+                $overlay = new JMAYtOverlay(array($meta_array['standardUrl'], $meta_array['thumbnailUrl']), $id);
+                $image_url = $overlay->get_url();
+                $return .= '<button class="jmayt-overlay-button" data-embedid="' . $id . '"><img src="' . $image_url . '"/></button>';
+                $return .=  '<div id="video' . $id . '" class="jmayt-hidden-iframe"></div>';
+            }
+            $return .= '</div><!--jma-responsive-wrap-->';
+            $return .= '</div><!--yt-video-wrap-->';
+            $return .= '<div class="jmayt-text-wrap">';
+            $return .= '<h3 class="jmayt-title" ' . $this->h3_string . '>' . $h3_title . $elipsis . '</h3>';
+            $return .= '</div><!--jmayt-text-wrap-->';
+            $return .= '</div><!--yt-item-->';
+            $return .= '</div><!--yt-item-wrap-->';
+            return $return;
         }
     }
 
@@ -283,13 +310,14 @@ class JMAYtVideo {
      * returns video html
      *
     * */
-    public function markup(){
+    public function markup()
+    {
         global $jmayt_options_array;
         $trans_id = 'jmaytvideo' . $this->id . $this->trans_atts_id;
-        $return = get_transient( $trans_id );
-        if(false === $return || !$jmayt_options_array['cache']) {//force reset if cache option at 0
+        $return = get_transient($trans_id);
+        if (false === $return || !$jmayt_options_array['cache']) {//force reset if cache option at 0
             $return = JMAYtVideo::single_html($this->id);
-            set_transient( $trans_id, $return, $jmayt_options_array['cache'] );
+            set_transient($trans_id, $return, $jmayt_options_array['cache']);
         }
         return $return;
     }
