@@ -49,7 +49,7 @@ class JMAYtVideo
      * @return array the snippet array for an individual video
      *
      * */
-    private function video_snippet($id)
+    private function video_snippet($id, $type = 'videos')
     {
         if (substr($id, 0, 4) === "http") {
             if (preg_match('%(?:youtube(?:-nocookie)?\.com/(?:[^/]+/.+/|(?:v|e(?:mbed)?)/|.*[?&]v=)|youtu\.be/)([^"&?/ ]{11})%i', $url, $match)) {
@@ -57,13 +57,13 @@ class JMAYtVideo
             }
         }
         $snippet = array();
-        $youtube = 'https://www.googleapis.com/youtube/v3/videos?part=snippet&id=' . $id . '&fields=items%2Fsnippet&key=' . $this->api;
+        $youtube = 'https://www.googleapis.com/youtube/v3/' . $type . '?&part=snippet,contentDetails,statistics,status&id=' . $id . '&key=' . $this->api;
         $curl_array = JMAYtVideo::curl($youtube);
         if (is_array($curl_array)) {
             if (!count($curl_array['items'])) {
                 return 'videoNotFound';
             }
-            $snippet = $curl_array['items'][0]['snippet'];
+            $snippet = $curl_array['items'][0];
         } elseif (is_string($curl_array)) {
             $snippet = $curl_array;
         }
@@ -77,15 +77,26 @@ class JMAYtVideo
  * @return $yt_meta_array_items array schema values mapped to schema properties
  *
  * */
-    private function map_meta($snippet, $id)
-    {//map youtude array to schema proprties  interactionCount duration
+    private function map_meta($data, $id)
+    {//map youtude array to schema proprties
+        $snippet = $data['snippet'];
+        $channel = JMAYtVideo::video_snippet($snippet['channelId'], 'channels');
+        $logo = $channel['snippet']['thumbnails']['default'];
+        /*echo '<pre>';
+        print_r($channel);
+        echo '</pre>';*/
         $yt_meta_array_items['name'] = $snippet['title'];
         $yt_meta_array_items['pub_name'] = $snippet['channelTitle'];
+        $yt_meta_array_items['logo_url'] = $logo['url'];
+        $yt_meta_array_items['logo_width'] = $logo['width'];
+        $yt_meta_array_items['logo_height'] = $logo['height'];
         $yt_meta_array_items['description'] = $snippet['description'];
         $yt_meta_array_items['thumbnailUrl'] = $snippet['thumbnails']['default']['url'];
         $yt_meta_array_items['standardUrl'] = $snippet['thumbnails']['standard']['url'];
         $yt_meta_array_items['embedURL'] = 'https://www.youtube.com/embed/' . $id;
         $yt_meta_array_items['uploadDate'] = $snippet['publishedAt'];
+        $yt_meta_array_items['interactionCount'] = $data['statistics']['viewCount'];
+        $yt_meta_array_items['duration'] = $data['contentDetails']['duration'];
         return apply_filters('jmaty_meta_array_items', $yt_meta_array_items);
     }
 
@@ -183,21 +194,25 @@ class JMAYtVideo
  * */
     public function jma_youtube_schema_html($yt_meta_array_items)
     {
-        $pub = $return = '';
+        $logo = $pub = $return = '';
         foreach ($yt_meta_array_items as $prop => $yt_meta_array_item) {
             if ($prop != 'standardUrl') {
-                if (substr($prop, 0, 4) != 'pub_') {
-
-                    //$prop = str_replace('pub_', '', $prop);
-                    $return .= '<meta itemprop="' . $prop . '" content="' . str_replace('"', '\'', $yt_meta_array_item)   . '" />';
-                } else {
+                if (substr($prop, 0, 4) == 'pub_') {
                     $prop = str_replace('pub_', '', $prop);
                     $pub .=  '<meta itemprop="' . $prop . '" content="' . str_replace('"', '\'', $yt_meta_array_item)   . '" />';
+                } elseif (substr($prop, 0, 5) == 'logo_') {
+                    $prop = str_replace('logo_', '', $prop);
+                    $logo .=  '<meta itemprop="' . $prop . '" content="' . str_replace('"', '\'', $yt_meta_array_item)   . '" />';
+                } else {
+                    $return .= '<meta itemprop="' . $prop . '" content="' . str_replace('"', '\'', $yt_meta_array_item)   . '" />';
                 }
             }
-            if ($pub) {
-                $return .= '<div itemprop="publisher" itemscope itemtype="https://schema.org/Organization">' . $pub . '</div>';
-            }
+        }
+        if ($pub && $logo) {
+            $pub .= '<div itemprop="logo" itemscope itemtype="https://schema.org/ImageObject">' . $logo . '</div>';
+        }
+        if ($pub) {
+            $return .= '<div itemprop="publisher" itemscope itemtype="https://schema.org/Organization">' . $pub . '</div>';
         }
         return $return;
     }
@@ -259,11 +274,12 @@ class JMAYtVideo
     protected function single_html($id, $list = false)
     {
         global $jmayt_options_array;
-        $snippet = JMAYtVideo::video_snippet($id);
-        if (is_string($snippet)) {
-            return JMAYtVideo::error_handler($snippet);
+        $data = JMAYtVideo::video_snippet($id);
+        $snippet = $data['snippet'];
+        if (is_string($data)) {
+            return JMAYtVideo::error_handler($data);
         } else {
-            $meta_array = JMAYtVideo::map_meta($snippet, $id);
+            $meta_array = JMAYtVideo::map_meta($data, $id);
             $h3_title = $meta_array['name'];
             $elipsis = '';
             if ($this->item_font_length == -23  && $jmayt_options_array['item_font_length']) {
@@ -285,7 +301,7 @@ class JMAYtVideo
             $return .= '<button class="jmayt-btn jmayt-sm" ' . $this->button_string . '>&#xe140;</button>';
             $return .= JMAYtVideo::jma_youtube_schema_html($meta_array);
             if (!$list || !$jmayt_options_array['cache_images']) {// single video or image caching off
-                $return .=  '<iframe src="' . $meta_array['embedURL'] . '?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe>';
+                $return .=  '<div><iframe src="' . $meta_array['embedURL'] . '?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe></div>';
             } else {
                 $overlay = new JMAYtOverlay(array($meta_array['standardUrl'], $meta_array['thumbnailUrl']), $id);
                 $image_url = $overlay->get_url();
