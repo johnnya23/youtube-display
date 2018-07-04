@@ -2,8 +2,8 @@
 Contributors: johnnya23
 Tags: youtube, schema, youtube gallery, youtube playlist, youtube embed, youtube seo, youtube channel, responsive youtube
 Requires at least: 4.0
-Tested up to: 4.9.5
-Stable tag: 1.3.1
+Tested up to: 4.9.6
+Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -92,6 +92,8 @@ meta itemprop="description" content=""
 meta itemprop="thumbnailUrl" content=""
 meta itemprop="embedURL" content=""
 meta itemprop="uploadDate" content=""
+meta itemprop="interactionCount" content=""
+meta itemprop="duration" content=""
 With content values pulled from the YouTube API.
 
 = My lists and videos are showing, but the display is off. What gives? =
@@ -174,3 +176,6 @@ https://bgrins.github.io/spectrum/
 = 1.3.1 =
 * fix array issues in settings class
 * delay play icons until videos are ready on cached images setup
+
+= 1.3.2 =
+* add publisher and logo and interaction count and duration to schema
