@@ -3,11 +3,41 @@
 Plugin Name: Responsive YouTube Videos and Playlists with Schema
 Plugin URI: https://cleansupersites.com/jma-youtube-playlists-with-schema/
 Description: Makes available shortcode for embed of single videos and grids from YouTube video playlists, which include schema.org markup as recommended by google.
-Version: 1.3.2
+Version: 2.0
 Author: John Antonacci
 Author URI: http://cleansupersites.com
 License: GPL2
 */
+if (! defined('ABSPATH')) {
+    exit;
+}
+
+/**
+ * Define global constants.
+ *
+ * @since 1.0.0
+ */
+// Plugin version.
+if (! defined('JMAYT_VERSION')) {
+    define('JMAYT_VERSION', '2.0');
+}
+
+if (! defined('JMAYT_NAME')) {
+    define('JMAYT_NAME', trim(dirname(plugin_basename(__FILE__)), '/'));
+}
+
+if (! defined('JMAYT_DIR')) {
+    define('JMAYT_DIR', plugin_dir_path(__FILE__));
+}
+
+if (! defined('JMAYT_URL')) {
+    define('JMAYT_URL', plugin_dir_url(__FILE__));
+}
+
+/**
+ * BLOCK: Profile Block.
+ */
+require_once(JMAYT_DIR . 'block/single/index.php');
 
 /*
  * function jma_yt_quicktags
@@ -31,19 +61,25 @@ function jmayt_quicktags()
 }
 add_action('admin_print_footer_scripts', 'jmayt_quicktags');
 
+
+wp_register_style('jmayt_bootstrap_css', plugins_url('/jmayt_bootstrap.css', __FILE__));
+wp_register_script('jmayt_api', 'https://www.youtube.com/player_api', array( 'jquery' ));
+wp_register_script('jmayt_js', plugins_url('/jmayt_js.js', __FILE__), array( 'jquery', 'jmayt_api' ));
+
 function jmayt_scripts()
 {
-    wp_enqueue_style('jmayt_bootstrap_css', plugins_url('/jmayt_bootstrap.css', __FILE__));
-    wp_enqueue_script('jmayt_api', 'https://www.youtube.com/player_api', array( 'jquery' ));
-    wp_enqueue_script('jmayt_js', plugins_url('/jmayt_js.js', __FILE__), array( 'jquery', 'jmayt_api' ));
+    wp_enqueue_style('jmayt_bootstrap_css');
+    wp_enqueue_script('jmayt_api');
+    wp_enqueue_script('jmayt_js');
     $custom_css = jmayt_styles();
     wp_add_inline_style('jmayt_bootstrap_css', $custom_css);
 }
+add_action('enqueue_block_editor_assets', 'jmayt_scripts');
 
 function jmayt_template_redirect()
 {
     global $jmayt_options_array;
-    if (jmayt_detect_shortcode(array('yt_grid', 'yt_video', 'yt_video_wrap')) || $jmayt_options_array['uni']) {
+    if (jmayt_detect_shortcode(array('yt_grid', 'yt_video', 'yt_video_wrap', 'jmayt-single/block', 'jmayt_list/block')) || $jmayt_options_array['uni']) {
         add_action('wp_enqueue_scripts', 'jmayt_scripts');
     }
 }
@@ -53,7 +89,7 @@ add_action('template_redirect', 'jmayt_template_redirect');
 /**
  * function jmayt_detect_shortcode Detect shortcodes in a post object,
  *  from a post id or from global $post.
- * @param string or array $needle - the shortcode(s) to search for
+ * @param string or array $needle - the shortcode(s) and block(s) to search for
  * use array for multiple values
  * @param int or object $post_item - the post to search (defaults to current)
  * @return boolean $return
@@ -69,27 +105,21 @@ function jmayt_detect_shortcode($needle = '', $post_item = 0)
     } else {
         global $post;
     }
-    if (is_array($needle)) {
-        $pattern = get_shortcode_regex($needle);
-    } elseif (is_string($needle)) {
-        $pattern = get_shortcode_regex(array($needle));
-    } else {
-        $pattern = get_shortcode_regex();
-    }
+    $pattern = get_shortcode_regex();
 
     preg_match_all('/'. $pattern .'/s', $post->post_content, $matches);
+    /*echo '<pre>';
+    print_r($matches);
+    echo '</pre>';*/
 
 
     if (//if shortcode(s) to be searched for were passed and not found $return false
 
-        array_key_exists(2, $matches) &&
-        count($matches[2])
-    ) {
-        $return = $matches;
-    } else {
-        $return = false;
+        array_key_exists(2, $matches)) {
+        $return = array_intersect($needle, $matches[2]);
+    } elseif (has_blocks($post->post_content)) {
+        $return = array_intersect($needle, parse_blocks($post->post_content));
     }
-
     return apply_filters('jmayt_detect_shortcode_result', $return, $post, $needle);
 }
 
