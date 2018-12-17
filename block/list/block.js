@@ -9,29 +9,16 @@
     var InspectorControls = wp.editor.InspectorControls
     var TextControl = components.TextControl
 
-    registerBlockType('jmayt-single/block', { // The name of our block. Must be a string with prefix. Example: my-plugin/my-custom-block.
-        title: i18n.__('Single YouTube Responsive Video'), // The title of our block.
-        description: i18n.__('A custom block for displaying responsive YouTube videos.'), // The description of our block.
+    registerBlockType('jmayt-list/block', { // The name of our block. Must be a string with prefix. Example: my-plugin/my-custom-block.
+        title: i18n.__('List YouTube Responsive Videos'), // The title of our block.
+        description: i18n.__('A custom block for displaying lists responsive YouTube videos.'), // The description of our block.
         icon: 'video', // Dashicon icon for our block. Custom icons can be added using inline SVGs.
         category: 'common', // The category of the block.
-        /*attributes: { // Necessary for saving block content.
-            alignment: {
-                type: 'string',
-                default: 'center'
-            },
-            width: {
-                type: 'number'
-            },
-            video_id: {
-                type: 'string'
-            }
-        },*/
 
         edit: function(props) {
             var attributes = props.attributes
-            var alignment = props.attributes.alignment
-            var width = props.attributes.width
-            var video_id = props.attributes.video_id
+            var yt_list_id = props.attributes.yt_list_id
+            var query_max = props.attributes.query_max
             var ServerSideRender = wp.components.ServerSideRender
 
             function onChangeAlignment(newAlignment) {
@@ -42,15 +29,8 @@
 
             return [
                 el(BlockControls, {
-                        key: 'controls'
-                    }, // Display controls when the block is clicked on.
-
-                    // Display alignment toolbar within block controls.
-                    el(AlignmentToolbar, {
-                        value: alignment,
-                        onChange: onChangeAlignment
-                    })
-                ),
+                    key: 'controls'
+                }),
                 el(InspectorControls, {
                         key: 'inspector'
                     }, // Display the block options in the inspector panel.
@@ -59,26 +39,25 @@
                             className: 'jmaty-values',
                             initialOpen: true
                         },
-                        el('p', {}, i18n.__('Values for display of single responsive YouTube Video.')),
+                        el('p', {}, i18n.__('Values for display of lists of responsive YouTube Videos.')),
                         // Video id text field option.
                         el(TextControl, {
                             type: 'text',
-                            label: i18n.__('YouTube Video ID'),
-                            value: video_id,
-                            onChange: function(newvideo_id) {
+                            label: i18n.__('YouTube List ID'),
+                            value: yt_list_id,
+                            onChange: function(newyt_list_id) {
                                 props.setAttributes({
-                                    video_id: newvideo_id
+                                    yt_list_id: newyt_list_id
                                 })
                             }
                         }),
-                        // Width number field option.
                         el(TextControl, {
                             type: 'text',
-                            label: i18n.__('Width (use unit - % strongly recommended)'),
-                            value: width,
-                            onChange: function(newwidth) {
+                            label: i18n.__('Max to Diplay (blank for all)'),
+                            value: query_max,
+                            onChange: function(newquery_max) {
                                 props.setAttributes({
-                                    width: newwidth
+                                    query_max: newquery_max
                                 })
                             }
                         })
@@ -86,7 +65,7 @@
                     )
                 ),
                 el(ServerSideRender, {
-                    block: 'jmayt-single/block',
+                    block: 'jmayt-list/block',
                     attributes: props.attributes,
                 })
             ]

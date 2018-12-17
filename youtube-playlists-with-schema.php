@@ -38,6 +38,7 @@ if (! defined('JMAYT_URL')) {
  * BLOCK: Profile Block.
  */
 require_once(JMAYT_DIR . 'block/single/index.php');
+require_once(JMAYT_DIR . 'block/list/index.php');
 
 /*
  * function jma_yt_quicktags
@@ -79,7 +80,7 @@ add_action('enqueue_block_editor_assets', 'jmayt_scripts');
 function jmayt_template_redirect()
 {
     global $jmayt_options_array;
-    if (jmayt_detect_shortcode(array('yt_grid', 'yt_video', 'yt_video_wrap', 'jmayt-single/block', 'jmayt_list/block')) || $jmayt_options_array['uni']) {
+    if (jmayt_detect_shortcode(array('yt_grid', 'yt_video', 'yt_video_wrap', 'jmayt-single/block', 'jmayt-list/block')) || $jmayt_options_array['uni']) {
         add_action('wp_enqueue_scripts', 'jmayt_scripts');
     }
 }
@@ -108,17 +109,15 @@ function jmayt_detect_shortcode($needle = '', $post_item = 0)
     $pattern = get_shortcode_regex();
 
     preg_match_all('/'. $pattern .'/s', $post->post_content, $matches);
-    /*echo '<pre>';
-    print_r($matches);
-    echo '</pre>';*/
 
-
-    if (//if shortcode(s) to be searched for were passed and not found $return false
-
-        array_key_exists(2, $matches)) {
+    //if shortcode(s) to be searched for were passed and not found $return false
+    if (count($matches[2])) {
         $return = array_intersect($needle, $matches[2]);
     } elseif (has_blocks($post->post_content)) {
-        $return = array_intersect($needle, parse_blocks($post->post_content));
+        foreach (parse_blocks($post->post_content) as $block) {
+            $blocknames[] = $block['blockName'];
+        }
+        $return = array_intersect($needle, $blocknames);
     }
     return apply_filters('jmayt_detect_shortcode_result', $return, $post, $needle);
 }
@@ -699,6 +698,15 @@ function jma_yt_grid($atts)
     global $jmayt_options_array;
     $jmayt_api_code = $jmayt_options_array['api'];
     $atts = jmayt_sanitize_array($atts);
+    if (!isset($atts['query_max'])) {
+        $atts['query_max'] = 0;
+    }
+    if (!$atts['yt_list_id']) {
+        return 'Enter a list id';
+    }
+    if (isset($atts['className'])) {
+        $atts['class'] = $atts['className'];
+    }
 
     $you_tube_list = new JMAYtList($atts['yt_list_id'], $jmayt_api_code);
     //processing plugin options - form array of column atts and set defaults
@@ -730,7 +738,7 @@ function jma_yt_grid($atts)
         $max = $jmayt_options_array['query_max'];
     }
 
-    if (isset($atts['query_max'])) {
+    if (isset($atts['query_max']) && $atts['query_max'] > 0) {
         $max = $atts['query_max'];
     }
 
@@ -797,7 +805,9 @@ function jma_yt_video_wrap_html($atts, $video_id)
     );
     echo '<div ';
     foreach ($attributes as $name => $attribute) {
-        echo $name . '="' . $attribute . '" ';
+        if ($attribute) {
+            echo $name . '="' . $attribute . '" ';
+        }
     }
     echo '>';
     echo $yt_video->markup();
@@ -812,6 +822,12 @@ function jma_yt_video_wrap_html($atts, $video_id)
 function jma_yt_video($atts)
 {
     $video_id = $atts['video_id'];
+    if (!$video_id) {
+        return 'please enter a video id';
+    }
+    if (isset($atts['className'])) {
+        $atts['class'] = $atts['className'];
+    }
     ob_start();
     jma_yt_video_wrap_html($atts, $video_id);
     $x = ob_get_contents();

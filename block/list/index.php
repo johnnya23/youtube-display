@@ -21,7 +21,7 @@
   *
   * @since 1.0.0
   */
- function JMA_yt_block()
+ function JMA_yt_list_block()
  {
      if (! function_exists('register_block_type')) {
          // Gutenberg is not active.
@@ -30,7 +30,7 @@
 
      // Scripts.
      wp_register_script(
-        'jma-yt-block-script', // Handle.
+        'jma-yt-list-block-script', // Handle.
         plugins_url('block.js', __FILE__), // Block.js: We register the block here.
         array( 'wp-blocks', 'wp-components', 'wp-element', 'wp-i18n', 'wp-editor' ), // Dependencies, defined above.
         filemtime(plugin_dir_path(__FILE__) . 'block.js'),
@@ -39,25 +39,22 @@
 
      // Here we actually register the block with WP, again using our namespacing.
      // We also specify the editor script to be used in the Gutenberg interface.
-     register_block_type('jmayt-single/block', array(
+     register_block_type('jmayt-list/block', array(
         'attributes'      => array(
-            'video_id' => array(
-                'type' => 'string',
-            ),
-            'alignment' => array(
-                'type' => 'string',
-            ),
-            'width' => array(
+            'yt_list_id' => array(
                 'type' => 'string',
             ),
             'className' => array(
                 'type' => 'string',
             ),
+            'query_max' => array(
+                'type' => 'string',
+            ),
         ),
-        'editor_script' => 'jma-yt-block-script',
-        'render_callback' => 'jma_yt_video',
+        'editor_script' => 'jma-yt-list-block-script',
+        'render_callback' => 'jma_yt_grid',
     ));
  } // End function JMA_yt_block().
 
  // Hook: Editor assets.
- add_action('init', 'JMA_yt_block');
+ add_action('init', 'JMA_yt_list_block');
