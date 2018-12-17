@@ -52,7 +52,7 @@
                             }
                         }),
                         el(TextControl, {
-                            type: 'text',
+                            type: 'number',
                             label: i18n.__('Max to Diplay (blank for all)'),
                             value: query_max,
                             onChange: function(newquery_max) {
