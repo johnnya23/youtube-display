@@ -89,8 +89,8 @@ class JMAYtVideo
         $yt_meta_array_items['pub_name'] = $snippet['channelTitle'];
         $yt_meta_array_items['logo_url'] = $logo['url'];
         $yt_meta_array_items['logo_width'] = $logo['width'];
-        $yt_meta_array_items['logo_height'] = $logo['height'];
-        $yt_meta_array_items['description'] = $snippet['description'];
+        $yt_meta_array_items['logo_height'] = $logo['height'] > 60? 60: $logo['height'];
+        $yt_meta_array_items['description'] = trim($snippet['description'])?$snippet['description']: $snippet['title'];
         $yt_meta_array_items['thumbnailUrl'] = $snippet['thumbnails']['default']['url'];
         $yt_meta_array_items['standardUrl'] = $snippet['thumbnails']['standard']['url'];
         $yt_meta_array_items['embedURL'] = 'https://www.youtube.com/embed/' . $id;
@@ -308,13 +308,13 @@ class JMAYtVideo
                 $return .= '<button class="jmayt-overlay-button" data-embedid="' . $id . '"><img src="' . $image_url . '"/></button>';
                 $return .=  '<div id="video' . $id . '" class="jmayt-hidden-iframe"></div>';
             }
-            $return .= '</div><!--jma-responsive-wrap-->';
-            $return .= '</div><!--yt-video-wrap-->';
+            $return .= '</div>';//jma-responsive-wrap
+            $return .= '</div>';//jmayt-video-wrap
             $return .= '<div class="jmayt-text-wrap">';
             $return .= '<h3 class="jmayt-title" ' . $this->h3_string . '>' . $h3_title . $elipsis . '</h3>';
-            $return .= '</div><!--jmayt-text-wrap-->';
-            $return .= '</div><!--yt-item-->';
-            $return .= '</div><!--yt-item-wrap-->';
+            $return .= '</div>';//jmayt-text-wrap
+            $return .= '</div>';//yt-item
+            $return .= '</div>';//yt-item-wrap
             return $return;
         }
     }

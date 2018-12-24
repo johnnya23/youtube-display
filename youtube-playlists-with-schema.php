@@ -62,7 +62,6 @@ function jmayt_quicktags()
 }
 add_action('admin_print_footer_scripts', 'jmayt_quicktags');
 
-
 wp_register_style('jmayt_bootstrap_css', plugins_url('/jmayt_bootstrap.css', __FILE__));
 wp_register_script('jmayt_api', 'https://www.youtube.com/player_api', array( 'jquery' ));
 wp_register_script('jmayt_js', plugins_url('/jmayt_js.js', __FILE__), array( 'jquery', 'jmayt_api' ));
@@ -760,7 +759,7 @@ function jma_yt_grid($atts)
     }
     echo '>';
     echo $you_tube_list->markup($responsive_cols, $offset, $max);
-    echo '</div><!--yt-list-wrap-->';
+    echo '</div>';//yt-list-wrap
     $x = ob_get_contents();
     ob_end_clean();
 
@@ -811,7 +810,7 @@ function jma_yt_video_wrap_html($atts, $video_id)
     }
     echo '>';
     echo $yt_video->markup();
-    echo '</div><!--jmayt-item-wrap-->';
+    echo '</div>';//jmayt-single-item-wrap
 }
 
 /**
@@ -832,6 +831,7 @@ function jma_yt_video($atts)
     jma_yt_video_wrap_html($atts, $video_id);
     $x = ob_get_contents();
     ob_end_clean();
+
     return str_replace("\r\n", '', $x);
 }
 add_shortcode('yt_video', 'jma_yt_video');
@@ -852,8 +852,6 @@ function jma_yt_video_wrap($atts, $content = null)
     return str_replace("\r\n", '', $x);
 }
 add_shortcode('yt_video_wrap', 'jma_yt_video_wrap');
-
-
 
 function jmayt_on_activation_wc()
 {
