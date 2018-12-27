@@ -303,14 +303,9 @@ class JMAYtVideo
             $return .= '<div class="jma-responsive-wrap" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">';
             $return .= '<button class="jmayt-btn jmayt-sm" ' . $this->button_string . '>&#xe140;</button>';
             $return .= JMAYtVideo::jma_youtube_schema_html($meta_array);
-            if (!$list || !$jmayt_options_array['cache_images']) {// single video or image caching off
-                $return .=  '<div><iframe src="' . $meta_array['embedURL']. '?rel=0&amp;showinfo=0'  . $start . '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
-            } else {
-                $overlay = new JMAYtOverlay(array($meta_array['standardUrl'], $meta_array['thumbnailUrl']), $id);
-                $image_url = $overlay->get_url();
-                $return .= '<button class="jmayt-overlay-button" data-embedid="' . $id . '"><img src="' . $image_url . '"/></button>';
-                $return .=  '<div id="video' . $id . '" class="jmayt-hidden-iframe"></div>';
-            }
+
+            $return .=  '<div><iframe src="' . $meta_array['embedURL']. '?rel=0&amp;showinfo=0'  . $start . '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
+            
             $return .= '</div>';//jma-responsive-wrap
             $return .= '</div>';//jmayt-video-wrap
             $return .= '<div class="jmayt-text-wrap">';
