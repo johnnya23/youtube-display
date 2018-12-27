@@ -12,26 +12,15 @@
     registerBlockType('jmayt-single/block', { // The name of our block. Must be a string with prefix. Example: my-plugin/my-custom-block.
         title: i18n.__('Single YouTube Responsive Video'), // The title of our block.
         description: i18n.__('A custom block for displaying responsive YouTube videos.'), // The description of our block.
-        icon: 'video', // Dashicon icon for our block. Custom icons can be added using inline SVGs.
+        icon: 'video-alt3', // Dashicon icon for our block. Custom icons can be added using inline SVGs.
         category: 'common', // The category of the block.
-        /*attributes: { // Necessary for saving block content.
-            alignment: {
-                type: 'string',
-                default: 'center'
-            },
-            width: {
-                type: 'number'
-            },
-            video_id: {
-                type: 'string'
-            }
-        },*/
 
         edit: function(props) {
             var attributes = props.attributes
             var alignment = props.attributes.alignment
-            var width = props.attributes.width
             var video_id = props.attributes.video_id
+            var width = props.attributes.width
+            var start = props.attributes.start
             var ServerSideRender = wp.components.ServerSideRender
 
             function onChangeAlignment(newAlignment) {
@@ -79,6 +68,17 @@
                             onChange: function(newwidth) {
                                 props.setAttributes({
                                     width: newwidth
+                                })
+                            }
+                        }),
+                        // Width number field option.
+                        el(TextControl, {
+                            type: 'number',
+                            label: i18n.__('Start time in seconds'),
+                            value: start,
+                            onChange: function(newstart) {
+                                props.setAttributes({
+                                    start: newstart
                                 })
                             }
                         })

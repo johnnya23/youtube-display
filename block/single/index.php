@@ -50,6 +50,9 @@
             'width' => array(
                 'type' => 'string',
             ),
+            'start' => array(
+                'type' => 'string',
+            ),
             'className' => array(
                 'type' => 'string',
             ),

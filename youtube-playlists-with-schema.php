@@ -307,7 +307,7 @@ $settings = array(
                 'label'			=> __('Font color for YouTube item titles', 'jmayt_textdomain'),
                 'description'	=> __('Null your theme\'s title color (item_font_color)', 'jmayt_textdomain'),
                 'type'			=> 'color',
-                'default'		=> 0
+                'default'		=> '#21759B'
             ),
             array(
                 'id' 			=> 'item_font_size',
@@ -336,14 +336,14 @@ $settings = array(
                 'label'			=> __('Background color for YouTube items', 'jmayt_textdomain'),
                 'description'	=> __('Null for no bg (item_bg)', 'jmayt_textdomain'),
                 'type'			=> 'color',
-                'default'		=> 0
+                'default'		=> '#cbe0e9'
             ),
             array(
                 'id' 			=> 'item_border',
                 'label'			=> __('Border color for YouTube items', 'jmayt_textdomain'),
                 'description'	=> __('Null for no border (item_border)', 'jmayt_textdomain'),
                 'type'			=> 'color',
-                'default'		=> 0
+                'default'		=> '#21759B'
             ),
             array(
                 'id' 			=> 'button_font',
@@ -386,14 +386,14 @@ $settings = array(
                 'label'			=> __('Grid horizontal spacing', 'jmayt_textdomain'),
                 'description'	=> __('in px between YouTube grid items - best results even number between 0 and 30 (item_gutter)', 'jmayt_textdomain'),
                 'type'			=> 'number',
-                'default'		=> '30'
+                'default'		=> 30
             ),
             array(
                 'id' 			=> 'item_spacing',
                 'label'			=> __('Grid vertical spacing', 'jmayt_textdomain'),
                 'description'	=> __('in px between YouTube grid items (item_spacing)', 'jmayt_textdomain'),
                 'type'			=> 'number',
-                'default'		=> '15'
+                'default'		=> 15
             ),
             array(
                 'id' 			=> 'lg_cols',
@@ -809,7 +809,7 @@ function jma_yt_video_wrap_html($atts, $video_id)
         }
     }
     echo '>';
-    echo $yt_video->markup();
+    echo $yt_video->markup($atts['start']);
     echo '</div>';//jmayt-single-item-wrap
 }
 

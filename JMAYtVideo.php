@@ -93,7 +93,7 @@ class JMAYtVideo
         $yt_meta_array_items['description'] = trim($snippet['description'])?$snippet['description']: $snippet['title'];
         $yt_meta_array_items['thumbnailUrl'] = $snippet['thumbnails']['default']['url'];
         $yt_meta_array_items['standardUrl'] = $snippet['thumbnails']['standard']['url'];
-        $yt_meta_array_items['embedURL'] = 'https://www.youtube.com/embed/' . $id;
+        $yt_meta_array_items['embedURL'] = 'https://www.youtube-nocookie.com/embed/' . $id;
         $yt_meta_array_items['uploadDate'] = $snippet['publishedAt'];
         $yt_meta_array_items['interactionCount'] = $data['statistics']['viewCount'];
         $yt_meta_array_items['duration'] = $data['contentDetails']['duration'];
@@ -117,6 +117,7 @@ class JMAYtVideo
         $this->h3_string =
         $this->trans_atts_id = '';
         $this->item_font_length = -23;
+
         $return = array();
         //the relavent atributes to check for values
         $display_att_list = array( 'item_font_color', 'item_font_size', 'item_font_alignment', 'item_font_length', 'item_bg', 'item_border', 'item_gutter','item_spacing','button_font','button_bg', 'width', 'alignment' );
@@ -271,7 +272,7 @@ class JMAYtVideo
      * returns video box html
      *
     * */
-    protected function single_html($id, $list = false)
+    protected function single_html($id, $list = false, $start = 0)
     {
         global $jmayt_options_array;
         $data = JMAYtVideo::video_snippet($id);
@@ -294,6 +295,8 @@ class JMAYtVideo
                 $h3_title = substr($h3_title, 0, strpos($h3_title, "\n"));
                 $elipsis = '&nbsp;...';
             }
+            $start = $start > 0? '&amp;start=' . $start: '';
+
             $return .= '<div class="jmayt-item-wrap"' . $this->box_string . '>';
             $return .= '<div class="jmayt-item">';
             $return .= '<div class="jmayt-video-wrap">';
@@ -301,7 +304,7 @@ class JMAYtVideo
             $return .= '<button class="jmayt-btn jmayt-sm" ' . $this->button_string . '>&#xe140;</button>';
             $return .= JMAYtVideo::jma_youtube_schema_html($meta_array);
             if (!$list || !$jmayt_options_array['cache_images']) {// single video or image caching off
-                $return .=  '<div><iframe src="' . $meta_array['embedURL'] . '?rel=0&amp;showinfo=0" frameborder="0" allowfullscreen></iframe></div>';
+                $return .=  '<div><iframe src="' . $meta_array['embedURL']. '?rel=0&amp;showinfo=0'  . $start . '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
             } else {
                 $overlay = new JMAYtOverlay(array($meta_array['standardUrl'], $meta_array['thumbnailUrl']), $id);
                 $image_url = $overlay->get_url();
@@ -326,13 +329,13 @@ class JMAYtVideo
      * returns video html
      *
     * */
-    public function markup()
+    public function markup($start = 0)
     {
         global $jmayt_options_array;
-        $trans_id = 'jmaytvideo' . $this->id . $this->trans_atts_id;
+        $trans_id = 'jmaytvideo' . $this->id . $this->trans_atts_id . $start;
         $return = get_transient($trans_id);
         if (false === $return || !$jmayt_options_array['cache']) {//force reset if cache option at 0
-            $return = JMAYtVideo::single_html($this->id);
+            $return = JMAYtVideo::single_html($this->id, false, $start);
             set_transient($trans_id, $return, $jmayt_options_array['cache']);
         }
         return $return;

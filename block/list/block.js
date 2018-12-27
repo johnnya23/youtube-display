@@ -12,7 +12,7 @@
     registerBlockType('jmayt-list/block', { // The name of our block. Must be a string with prefix. Example: my-plugin/my-custom-block.
         title: i18n.__('List YouTube Responsive Videos'), // The title of our block.
         description: i18n.__('A custom block for displaying lists responsive YouTube videos.'), // The description of our block.
-        icon: 'video', // Dashicon icon for our block. Custom icons can be added using inline SVGs.
+        icon: 'video-alt3', // Dashicon icon for our block. Custom icons can be added using inline SVGs.
         category: 'common', // The category of the block.
 
         edit: function(props) {
