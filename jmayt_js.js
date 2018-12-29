@@ -1,5 +1,6 @@
 function jmayt_title_resize() {
     jQuery('.jmayt-list-wrap').each(function() {
+        alert('running');
         //make all title boxes the same height as the largest boxes
         $title = jQuery(this);
         var $title_max = Math.max.apply(null, $title.find('h3').map(function() {
@@ -70,7 +71,7 @@ function jmayt_toggle() {
                 });
             }
         } else { //adjust if toggle is backwards
-            jmayt_hide_lightbox()
+            jmayt_hide_lightbox();
         }
     }
 
@@ -106,7 +107,7 @@ function jmayt_toggle() {
             });
         } else {
             $this = jQuery(this); //redefine $this if toggle is backwards
-            jmayt_show_lightbox()
+            jmayt_show_lightbox();
         }
     }
     //for width change and orientation change on mobile
@@ -165,61 +166,13 @@ JmaytUtils.prototype = {
 var JmaytUtils = new JmaytUtils();
 
 
-function onYouTubePlayerAPIReady() {
-    jQuery('body').addClass('jmayt_loaded');
-    jQuery('.jmayt-overlay-button').each(function() {
-        $overlayButton = jQuery(this);
-        if (JmaytUtils.isElementInView($overlayButton, false) && !$overlayButton.next().is('iframe')) {
-            jmayt_setup_video($overlayButton);
-        }
-    });
-}
-
-function jmayt_setup_video($button) {
-    // create the global player from the specific iframe (#video) jmayt-overlay-button
-    $button_id = $button.data('embedid');
-    $player = new YT.Player('video' + $button_id, {
-        videoId: $button_id,
-        playerVars: {
-            rel: 0,
-            enablejsapi: 1
-        },
-        events: {
-            // call this function when player is ready to use
-            'onReady': jmayt_onPlayerReady
-        }
-    });
-}
-
-function jmayt_onPlayerReady(event) {
-
-    // bind events
-    $iframe = event.target.a;
-    var $playButton = jQuery($iframe).prev();
-    $playButton.addClass('jmayt-ready');
-    $playButton.bind("click", function() {
-        jQuery(this).css('display', 'none');
-        event.target.playVideo();
-    });
-
-}
-
-
 jQuery(window).scroll(function() {
     hold_fixed();
-    if (jQuery('body').hasClass('jmayt_loaded'))
-        onYouTubePlayerAPIReady();
 });
 
 jQuery(document).ready(function() {
     jmayt_title_resize();
     jmayt_toggle();
-
-});
-
-jQuery(window).load(function() {
-    onYouTubePlayerAPIReady();
-
 });
 
 jQuery(window).resize(function() {

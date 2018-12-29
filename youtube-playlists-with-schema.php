@@ -63,13 +63,11 @@ function jmayt_quicktags()
 add_action('admin_print_footer_scripts', 'jmayt_quicktags');
 
 wp_register_style('jmayt_bootstrap_css', plugins_url('/jmayt_bootstrap.css', __FILE__));
-wp_register_script('jmayt_api', 'https://www.youtube.com/player_api', array( 'jquery' ));
-wp_register_script('jmayt_js', plugins_url('/jmayt_js.js', __FILE__), array( 'jquery', 'jmayt_api' ));
+wp_register_script('jmayt_js', plugins_url('/jmayt_js.js', __FILE__), array( 'jquery' ));
 
 function jmayt_scripts()
 {
     wp_enqueue_style('jmayt_bootstrap_css');
-    wp_enqueue_script('jmayt_api');
     wp_enqueue_script('jmayt_js');
     $custom_css = jmayt_styles();
     wp_add_inline_style('jmayt_bootstrap_css', $custom_css);
@@ -195,36 +193,9 @@ function jmayt_clear_cache()
     foreach ($plugin_options as $option) {
         delete_option($option->option_name);
     }
-    if ($jmayt_options_array['cache_images']) {
-        jmayt_on_activation_wc();
-    } else {
-        $files = glob(realpath(plugin_dir_path(__FILE__)) . DIRECTORY_SEPARATOR . 'overlays' . DIRECTORY_SEPARATOR . '*'); // get all file names
-        foreach ($files as $file) { // iterate files
-            if (is_file($file)) {
-                unlink($file);
-            } // delete file
-        }
-        jmayt_on_deactivation_dc();
-    }
 }
 add_action('update_option_' . $jmayt_db_option, 'jmayt_clear_cache');
 
-function jmayt_clear_function()
-{
-    global $wpdb;
-    $files = glob(realpath(plugin_dir_path(__FILE__)) . DIRECTORY_SEPARATOR . 'overlays' . DIRECTORY_SEPARATOR . '*'); // get all file names
-    foreach ($files as $file) { // iterate files
-        if (is_file($file)) {
-            unlink($file);
-        } // delete file
-    }
-    $plugin_options = $wpdb->get_results("SELECT option_name FROM $wpdb->options WHERE option_name LIKE '_transient_jmaytvideo%' OR option_name LIKE '_transient_timeout_jmaytvideo%'");
-    foreach ($plugin_options as $option) {
-        delete_option($option->option_name);
-    }
-    die(header('Location:' . admin_url('options-general.php?page=jmayt_settings')));
-}
-add_action('admin_post_jmayt_clear_function', 'jmayt_clear_function');
 
 /**
  * Build settings fields
@@ -274,20 +245,6 @@ $settings = array(
                 'type'			=> 'radio',
                 'options'		=> array( 0 => 'Production' , 1 => 'Dev'),
                 'default'		=> 0
-            ),
-            array(
-                'id' 			=> 'cache_images',
-                'label'			=> __('Cache Images for lists', 'jmayt_textdomain'),
-                'description'	=> __('<span style="color:red">This option pulls thumbnail images from YouTube and stores them in the plugin for faster display of long lists. ACTIVATING THIS OPTION CAUSES THE PLUGIN TO TRY TO REWRITE .HTACCESS TO INCREASE MAX PAGE EXECUTION TIME TO 5 MINUTES. The first time a page with a large list loads the plugin will copy the YouTube thumbnail images dynamically. This means the first page load will be very slow. Thereafter the page will load thumbnails from the plugin folder (much faster). THIS OPTION MAY NOT WORK CORRECTLY DEPENDING ON YOUR HOSTING ENVIRONMENT (you can always switch back to conventional loading)</span>', 'jmayt_textdomain'),
-                'type'			=> 'radio',
-                'options'		=> array( 0 => 'Don\'t cache', 1 => 'Cache images'),
-                'default'		=> 0
-            ),
-            array(
-                'id' 			=> 'clear_images',
-                'label'			=> __('Clear Images for lists', 'jmayt_textdomain'),
-                'description'	=> __('Clear all images. This is the only way to get renewed images from YouTube. After clearing (or toggling the cache option above) you may want to load pages with long YouTube Lists as the first load will take a long time.', 'jmayt_textdomain'),
-                'type'			=> 'submit'/* submit is one time only hardcoded placehoder */
             )
         )
     ),
@@ -545,57 +502,12 @@ box-sizing: border-box;
 .clearfix:after {
     clear: both
 }
-.jmayt-video-wrap .jma-responsive-wrap iframe,
-.jmayt-video-wrap .jma-responsive-wrap .jmayt-overlay-button{
+.jmayt-video-wrap .jma-responsive-wrap iframe {
 	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
 	height: 100%;
-}
-.jmayt-video-wrap .jma-responsive-wrap .jmayt-overlay-button {
-    z-index:9;
-    display: block;
-    padding: 0;
-	top: -16.66%;
-	height: 133.33%;
-	border-width: 0;
-}
-.jmayt-video-wrap .jma-responsive-wrap .jmayt-overlay-button.jmayt-ready:after {
-    z-index:12;
-    background: rgba(0,0,0,0.7);
-    content: "";
-	position: absolute;
-    height: 30px;
-    width: 40px;
-    display: block;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	border-radius: 8px;
-}
-@media(max-width: 992px){
-.jmayt-video-wrap .jma-responsive-wrap .jmayt-overlay-button.jmayt-ready:after {
-    background: rgba(238,0,0,0.8);
-}}
-.jmayt-video-wrap .jma-responsive-wrap .jmayt-overlay-button:hover.jmayt-ready:after {
-    background: rgba(238,0,0,0.6);
-}
-.jmayt-video-wrap .jma-responsive-wrap .jmayt-overlay-button.jmayt-ready:before {
-    z-index:14;
-    content: "";
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 5px 0 5px 12px;
-    border-color: transparent transparent transparent #ffffff;
-}
-.jmayt-video-wrap .jma-responsive-wrap .jmayt-overlay-button img {
-    width: 100%;
 }
 .jmayt-video-wrap {
     padding-bottom: 56.25%;
@@ -626,11 +538,7 @@ box-sizing: border-box;
     transform: translate(-50%, -50%);
     width: 100%;
     transition: all 0.3s;
-}/*
-.jmayt-video-wrap.jmayt-fixed .jma-responsive-wrap {
-    padding-bottom: 45%;
-    width: 80%;
-}*/
+}
 .jmayt-fixed {
     background: rgba(0,0,0,0.8);
     position: absolute;

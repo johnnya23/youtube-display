@@ -7,7 +7,7 @@ Stable tag: 1.3.2
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Shortcode for embed of responsive single videos and grids from YouTube video playlists, which include schema.org markup as recommended by google.
+Blocks and Shortcode for embed of responsive single videos and grids from YouTube video playlists, which include schema.org markup as recommended by google.
 
 == Description ==
 
