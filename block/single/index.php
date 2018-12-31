@@ -31,7 +31,7 @@
      // Scripts.
      wp_register_script(
         'jma-yt-block-script', // Handle.
-        plugins_url('block.js', __FILE__), // Block.js: We register the block here.
+        plugins_url('block.min.js', __FILE__), // Block.js: We register the block here.
         array( 'wp-blocks', 'wp-components', 'wp-element', 'wp-i18n', 'wp-editor' ), // Dependencies, defined above.
         filemtime(plugin_dir_path(__FILE__) . 'block.js'),
         true

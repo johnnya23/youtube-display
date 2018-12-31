@@ -19,6 +19,7 @@
             var attributes = props.attributes
             var yt_list_id = props.attributes.yt_list_id
             var query_max = props.attributes.query_max
+            var query_offset = props.attributes.query_offset
             var ServerSideRender = wp.components.ServerSideRender
 
             function onChangeAlignment(newAlignment) {
@@ -53,11 +54,21 @@
                         }),
                         el(TextControl, {
                             type: 'number',
-                            label: i18n.__('Max to Diplay (blank for all)'),
+                            label: i18n.__('Max to Display (blank for all)'),
                             value: query_max,
                             onChange: function(newquery_max) {
                                 props.setAttributes({
                                     query_max: newquery_max
+                                })
+                            }
+                        }),
+                        el(TextControl, {
+                            type: 'number',
+                            label: i18n.__('Display list offset (blank for 0)'),
+                            value: query_offset,
+                            onChange: function(newquery_offset) {
+                                props.setAttributes({
+                                    query_offset: newquery_offset
                                 })
                             }
                         })

@@ -70,7 +70,7 @@ function jmayt_toggle() {
                 });
             }
         } else { //adjust if toggle is backwards
-            jmayt_hide_lightbox()
+            jmayt_hide_lightbox();
         }
     }
 
@@ -106,7 +106,7 @@ function jmayt_toggle() {
             });
         } else {
             $this = jQuery(this); //redefine $this if toggle is backwards
-            jmayt_show_lightbox()
+            jmayt_show_lightbox();
         }
     }
     //for width change and orientation change on mobile
@@ -195,7 +195,7 @@ function jmayt_onPlayerReady(event) {
 
     // bind events
     $iframe = event.target.a;
-    var $playButton = jQuery($iframe).prev();
+    var $playButton = jQuery($iframe).parents('.jma-responsive-wrap').find('.jmayt-overlay-button');
     $playButton.addClass('jmayt-ready');
     $playButton.bind("click", function() {
         jQuery(this).css('display', 'none');

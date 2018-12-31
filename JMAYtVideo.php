@@ -58,7 +58,7 @@ class JMAYtVideo
         }
         $snippet = array();
         $youtube = 'https://www.googleapis.com/youtube/v3/' . $type . '?&part=snippet,contentDetails,statistics,status&id=' . $id . '&key=' . $this->api;
-        $curl_array = JMAYtVideo::curl($youtube);
+        $curl_array = $this->curl($youtube);
         if (is_array($curl_array)) {
             if (!count($curl_array['items'])) {
                 return 'videoNotFound';
@@ -80,7 +80,7 @@ class JMAYtVideo
     private function map_meta($data, $id)
     {//map youtude array to schema proprties
         $snippet = $data['snippet'];
-        $channel = JMAYtVideo::video_snippet($snippet['channelId'], 'channels');
+        $channel = $this->video_snippet($snippet['channelId'], 'channels');
         $logo = $channel['snippet']['thumbnails']['default'];
         /*echo '<pre>';
         print_r($channel);
@@ -275,12 +275,12 @@ class JMAYtVideo
     protected function single_html($id, $list = false, $start = 0)
     {
         global $jmayt_options_array;
-        $data = JMAYtVideo::video_snippet($id);
+        $data = $this->video_snippet($id);
         $snippet = $data['snippet'];
         if (is_string($data)) {
-            return JMAYtVideo::error_handler($data);
+            return $this->error_handler($data);
         } else {
-            $meta_array = JMAYtVideo::map_meta($data, $id);
+            $meta_array = $this->map_meta($data, $id);
             $h3_title = $meta_array['name'];
             $elipsis = '';
             if ($this->item_font_length == -23  && $jmayt_options_array['item_font_length']) {
@@ -302,8 +302,8 @@ class JMAYtVideo
             $return .= '<div class="jmayt-video-wrap">';
             $return .= '<div class="jma-responsive-wrap" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">';
             $return .= '<button class="jmayt-btn jmayt-sm" ' . $this->button_string . '>&#xe140;</button>';
-            $return .= JMAYtVideo::jma_youtube_schema_html($meta_array);
-            if (!$list || !$jmayt_options_array['cache_images']) {// single video or image caching off
+            $return .= $this->jma_youtube_schema_html($meta_array);
+            if (/*!$list ||*/ !$jmayt_options_array['cache_images']) {// single video or image caching off
                 $return .=  '<div><iframe src="' . $meta_array['embedURL']. '?rel=0&amp;showinfo=0'  . $start . '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
             } else {
                 $overlay = new JMAYtOverlay(array($meta_array['standardUrl'], $meta_array['thumbnailUrl']), $id);
@@ -335,7 +335,7 @@ class JMAYtVideo
         $trans_id = 'jmaytvideo' . $this->id . $this->trans_atts_id . $start;
         $return = get_transient($trans_id);
         if (false === $return || !$jmayt_options_array['cache']) {//force reset if cache option at 0
-            $return = JMAYtVideo::single_html($this->id, false, $start);
+            $return = $this->single_html($this->id, false, $start);
             set_transient($trans_id, $return, $jmayt_options_array['cache']);
         }
         return $return;

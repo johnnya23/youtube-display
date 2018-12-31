@@ -64,7 +64,7 @@ add_action('admin_print_footer_scripts', 'jmayt_quicktags');
 
 wp_register_style('jmayt_bootstrap_css', plugins_url('/jmayt_bootstrap.css', __FILE__));
 wp_register_script('jmayt_api', 'https://www.youtube.com/player_api', array( 'jquery' ));
-wp_register_script('jmayt_js', plugins_url('/jmayt_js.js', __FILE__), array( 'jquery', 'jmayt_api' ));
+wp_register_script('jmayt_js', plugins_url('/jmayt_js.min.js', __FILE__), array( 'jquery', 'jmayt_api' ));
 
 function jmayt_scripts()
 {
@@ -198,7 +198,8 @@ function jmayt_clear_cache()
     if ($jmayt_options_array['cache_images']) {
         jmayt_on_activation_wc();
     } else {
-        $files = glob(realpath(plugin_dir_path(__FILE__)) . DIRECTORY_SEPARATOR . 'overlays' . DIRECTORY_SEPARATOR . '*'); // get all file names
+        $files = glob(realpath(plugin_dir_path(__FILE__)) . DIRECTORY_SEPARATOR . 'overlays' . DIRECTORY_SEPARATOR . '*', GLOB_NOCHECK | GLOB_MARK); // get all file names
+        print_r($files);
         foreach ($files as $file) { // iterate files
             if (is_file($file)) {
                 unlink($file);
@@ -277,7 +278,7 @@ $settings = array(
             ),
             array(
                 'id' 			=> 'cache_images',
-                'label'			=> __('Cache Images for lists', 'jmayt_textdomain'),
+                'label'			=> __('Cache Images', 'jmayt_textdomain'),
                 'description'	=> __('<span style="color:red">This option pulls thumbnail images from YouTube and stores them in the plugin for faster display of long lists. ACTIVATING THIS OPTION CAUSES THE PLUGIN TO TRY TO REWRITE .HTACCESS TO INCREASE MAX PAGE EXECUTION TIME TO 5 MINUTES. The first time a page with a large list loads the plugin will copy the YouTube thumbnail images dynamically. This means the first page load will be very slow. Thereafter the page will load thumbnails from the plugin folder (much faster). THIS OPTION MAY NOT WORK CORRECTLY DEPENDING ON YOUR HOSTING ENVIRONMENT (you can always switch back to conventional loading)</span>', 'jmayt_textdomain'),
                 'type'			=> 'radio',
                 'options'		=> array( 0 => 'Don\'t cache', 1 => 'Cache images'),
@@ -530,7 +531,8 @@ function jmayt_styles()
 box-sizing: border-box;
 }
 .jmayt-outer p, .jmayt-outer br, .jmayt-list-wrap p, .jmayt-list-wrap br {
-    display: none;
+    margin:0;
+    padding:0;
 }
 .doink-wrap p {
     display: block!important;
@@ -626,11 +628,7 @@ box-sizing: border-box;
     transform: translate(-50%, -50%);
     width: 100%;
     transition: all 0.3s;
-}/*
-.jmayt-video-wrap.jmayt-fixed .jma-responsive-wrap {
-    padding-bottom: 45%;
-    width: 80%;
-}*/
+}
 .jmayt-fixed {
     background: rgba(0,0,0,0.8);
     position: absolute;
