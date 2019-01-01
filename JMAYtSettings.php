@@ -72,14 +72,14 @@ class JMAYtSettings
      */
     public function settings_assets()
     {
-        wp_enqueue_style('spectrum_style', plugin_dir_url(__FILE__) . '/spectrum.css');
-        wp_enqueue_script('spectrum_script', plugin_dir_url(__FILE__) . '/spectrum.js');
+        wp_enqueue_style('minicolors_style', plugin_dir_url(__FILE__) . '/minicolors.css');
+        wp_enqueue_script('minicolors_script', plugin_dir_url(__FILE__) . '/minicolors.js');
 
         // We're including the WP media scripts here because they're needed for the image upload field
         // If you're not including an image upload then you can leave this function call out
         wp_enqueue_media();
 
-        wp_register_script($this->settings_base . 'admin-js', $this->assets_url . 'settings.js', array( 'spectrum_script', 'jquery' ), '1.0.0');
+        wp_register_script($this->settings_base . 'admin-js', $this->assets_url . 'settings.js', array( 'minicolors_script', 'jquery' ), '1.0.0');
         wp_enqueue_script($this->settings_base . 'admin-js');
     }
 
@@ -257,7 +257,7 @@ form="jmaty_clear"  /></p>';
 
             case 'color':
                 $html .= '<div class="color-picker" style="position:relative;">';
-                $html .= '<input type="text" name=" ' . esc_attr__($option_name) . ' " class="eyecon-picker" value="' . esc_html($data) . '" />';
+                $html .= '<input type="text" name=" ' . esc_attr__($option_name) . ' " class="mini-picker" value="' . esc_html($data) . '" />';
                 $html .= '</div>';
                 break;
 
