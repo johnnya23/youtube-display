@@ -1,11 +1,7 @@
 jQuery(document).ready(function($) {
 
-    /* spectrum */
-    $('.spectrum-picker').spectrum({
-        preferredFormat: 'hex',
-        showInput: true,
-        allowEmpty:true
-    });
+
+    $('.eyecon-picker').ColorPicker();
 
 
     /***** Uploading images ****

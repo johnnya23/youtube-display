@@ -151,7 +151,7 @@ to the end of your success() function
 
 = 1.1 =
 * Sperctrum color picker replaces farbtastic
-https://bgrins.github.io/spectrum/
+https://bgrins.github.io/eyecon/
 
 = 1.2 =
 * add overlays
