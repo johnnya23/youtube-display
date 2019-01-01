@@ -256,10 +256,9 @@ form="jmaty_clear"  /></p>';
                 break;
 
             case 'color':
-                ?><div class="color-picker" style="position:relative;">
-                <input type="text" name="<?php esc_attr_e($option_name); ?>" class="spectrum-picker" value="<?php echo esc_html($data) ?>" />
-                </div>
-                <?php
+                $html .= '<div class="color-picker" style="position:relative;">';
+                $html .= '<input type="text" name=" ' . esc_attr__($option_name) . ' " class="eyecon-picker" value="' . esc_html($data) . '" />';
+                $html .= '</div>';
                 break;
 
         }
