@@ -6,11 +6,13 @@
  * $id is a video id
  * Pull images from youtube with fetch_image(
  */
-class JMAYtOverlay {
-    var $urls;
-    var $id;
+class JMAYtOverlay
+{
+    public $urls;
+    public $id;
 
-    public function __construct($urls, $id){
+    public function __construct($urls, $id)
+    {
         $this->urls = $urls;
         $this->id = $id;
     }
@@ -21,30 +23,28 @@ class JMAYtOverlay {
      *
      *
      * */
-    public function get_url(){
-        $sep = DIRECTORY_SEPARATOR;
+    public function get_url()
+    {
         $urls = $this->urls;
-        $folder = realpath(plugin_dir_path(__FILE__)) . $sep . 'overlays';
-        if (!is_dir($folder))
-            mkdir($folder, '0755');
+        if (!is_dir(JMAYT_OVERLAYS_URL)) {
+            mkdir(JMAYT_OVERLAYS_URL, '0755');
+        }
 
-        foreach($urls as $url) {
-
+        foreach ($urls as $url) {
             $ex = explode('.', basename($url));
             $ext = $ex[1];
-            $return = plugins_url('/overlays/' . $this->id . '.' . $ext, __FILE__);
+            $return = JMAYT_OVERLAYS_URL . '/' . $this->id . '.' . $ext;
 
             //asign image to overlays folder with name of youtube id (plus extension)
-            $filename = $folder . $sep . $this->id . '.' . $ext;
-            //transient evaluated here -- also have to check for image file in overlays folder
-            if(!file_exists($filename)){
-
-                if($this->fetch_image($url, $folder, $this->id)){
-
+            $filename = $folder . '/' . $this->id . '.' . $ext;
+            //check for image file in overlays folder
+            if (!file_exists($filename)) {
+                if ($this->fetch_image($url, $folder, $this->id)) {
                     break;//no need to check remaining images
                 }
-            }else
+            } else {
                 break;
+            }
         }
 
         return $return;
@@ -65,31 +65,30 @@ class JMAYtOverlay {
      * @param string $store_dir The directory where you would like to store the images.
      * @return string the location of the image (either relative with the current script or abosule depending on $store_dir_type)
      */
-    protected function fetch_image($img_url, $store_dir = 'images', $filename = 'default') {
+    protected function fetch_image($img_url, $store_dir = 'images', $filename = 'default')
+    {
         //first get the base name of the image
         $i_name = $filename;
 
         //now try to guess the image type from the given url
         //it should end with a valid extension...
         //good for security too
-        if(preg_match('/https?:\/\/.*\.png$/i', $img_url)) {
+        if (preg_match('/https?:\/\/.*\.png$/i', $img_url)) {
             $img_type = 'png';
-        }
-        else if(preg_match('/https?:\/\/.*\.(jpg|jpeg)$/i', $img_url)) {
+        } elseif (preg_match('/https?:\/\/.*\.(jpg|jpeg)$/i', $img_url)) {
             $img_type = 'jpg';
-        }
-        else if(preg_match('/https?:\/\/.*\.gif$/i', $img_url)) {
+        } elseif (preg_match('/https?:\/\/.*\.gif$/i', $img_url)) {
             $img_type = 'gif';
-        }
-        else {
+        } else {
             return ''; //possible error on the image URL
         }
 
         $dir_name = rtrim($store_dir, '/') . '/';
 
         //create the directory if not present
-        if(!file_exists($dir_name))
+        if (!file_exists($dir_name)) {
             mkdir($dir_name, 0777, true);
+        }
 
         //calculate the destination image path
         $i_dest = $dir_name . $i_name . '.' . $img_type;
@@ -98,48 +97,49 @@ class JMAYtOverlay {
         $img_info = @getimagesize($img_url);
 
         //is it a valid image?
-        if(false == $img_info || !isset($img_info[2]) || !($img_info[2] == IMAGETYPE_JPEG || $img_info[2] == IMAGETYPE_PNG || $img_info[2] == IMAGETYPE_JPEG2000 || $img_info[2] == IMAGETYPE_GIF)) {
+        if (false == $img_info || !isset($img_info[2]) || !($img_info[2] == IMAGETYPE_JPEG || $img_info[2] == IMAGETYPE_PNG || $img_info[2] == IMAGETYPE_JPEG2000 || $img_info[2] == IMAGETYPE_GIF)) {
             return ''; //return empty string
         }
 
         //now try to create the image
-        if($img_type == 'jpg') {
+        if ($img_type == 'jpg') {
             $m_img = @imagecreatefromjpeg($img_url);
-        } else if($img_type == 'png') {
+        } elseif ($img_type == 'png') {
             $m_img = @imagecreatefrompng($img_url);
             @imagealphablending($m_img, false);
             @imagesavealpha($m_img, true);
-        } else if($img_type == 'gif') {
+        } elseif ($img_type == 'gif') {
             $m_img = @imagecreatefromgif($img_url);
         } else {
-            $m_img = FALSE;
+            $m_img = false;
         }
 
         //was the attempt successful?
-        if(FALSE === $m_img) {
+        if (false === $m_img) {
             return '';
         }
 
         //now attempt to save the file on local server
-        if($img_type == 'jpg') {
-            if(imagejpeg($m_img, $i_dest, 100))
+        if ($img_type == 'jpg') {
+            if (imagejpeg($m_img, $i_dest, 100)) {
                 return $i_dest;
-            else
+            } else {
                 return '';
-        } else if($img_type == 'png') {
-            if(imagepng($m_img, $i_dest, 0))
+            }
+        } elseif ($img_type == 'png') {
+            if (imagepng($m_img, $i_dest, 0)) {
                 return $i_dest;
-            else
+            } else {
                 return '';
-        } else if($img_type == 'gif') {
-            if(imagegif($m_img, $i_dest))
+            }
+        } elseif ($img_type == 'gif') {
+            if (imagegif($m_img, $i_dest)) {
                 return $i_dest;
-            else
+            } else {
                 return '';
+            }
         }
 
         return '';
     }
-
-
 }

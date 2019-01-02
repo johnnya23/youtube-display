@@ -1,11 +1,11 @@
 function jmayt_title_resize() {
     jQuery('.jmayt-list-wrap').each(function() {
         //make all title boxes the same height as the largest boxes
-        $title = jQuery(this);
-        var $title_max = Math.max.apply(null, $title.find('h3').map(function() {
+        $list_wrap = jQuery(this);
+        var $title_max = Math.max.apply(null, $list_wrap.find('h3').map(function() {
             return jQuery(this).outerHeight();
         }).get());
-        $title.find('.jmayt-text-wrap').css('min-height', $title_max + 'px');
+        $list_wrap.find('.jmayt-text-wrap').css('min-height', $title_max + 'px');
     });
 }
 
@@ -213,13 +213,15 @@ jQuery(window).scroll(function() {
 
 jQuery(document).ready(function() {
     jmayt_title_resize();
-    jmayt_toggle();
-
 });
 
 jQuery(window).load(function() {
+    jmayt_toggle();
+    //only in the edit screen
+    if (jQuery('body.wp-admin')) {
+        jmayt_title_resize();
+    }
     onYouTubePlayerAPIReady();
-
 });
 
 jQuery(window).resize(function() {

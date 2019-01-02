@@ -26,19 +26,57 @@ if (! defined('JMAYT_NAME')) {
     define('JMAYT_NAME', trim(dirname(plugin_basename(__FILE__)), '/'));
 }
 
+/* DIRECTORIES */
 if (! defined('JMAYT_DIR')) {
     define('JMAYT_DIR', plugin_dir_path(__FILE__));
 }
 
+if (! defined('JMAYT_BLOCKS_DIR')) {
+    define('JMAYT_BLOCKS_DIR', JMAYT_DIR . 'blocks');
+}
+
+if (! defined('JMAYT_LIST_DIR')) {
+    define('JMAYT_LIST_DIR', JMAYT_BLOCKS_DIR . DIRECTORY_SEPARATOR . 'list');
+}
+
+if (! defined('JMAYT_SINGLE_DIR')) {
+    define('JMAYT_SINGLE_DIR', JMAYT_BLOCKS_DIR . DIRECTORY_SEPARATOR . 'single');
+}
+
+if (! defined('JMAYT_CLASSES_DIR')) {
+    define('JMAYT_CLASSES_DIR', JMAYT_DIR . 'classes');
+}
+
+/* ADDRESSES */
 if (! defined('JMAYT_URL')) {
     define('JMAYT_URL', plugin_dir_url(__FILE__));
 }
 
+if (! defined('JMAYT_ADMIN_URL')) {
+    define('JMAYT_ADMIN_URL', JMAYT_URL . 'admin');
+}
+
+if (! defined('JMAYT_ASSETS_URL')) {
+    define('JMAYT_ASSETS_URL', JMAYT_URL . 'assets');
+}
+
+if (! defined('JMAYT_CSS_URL')) {
+    define('JMAYT_CSS_URL', JMAYT_ASSETS_URL . '/css');
+}
+
+if (! defined('JMAYT_JS_URL')) {
+    define('JMAYT_JS_URL', JMAYT_ASSETS_URL . '/js');
+}
+
+if (! defined('JMAYT_OVERLAYS_URL')) {
+    define('JMAYT_OVERLAYS_URL', JMAYT_ASSETS_URL . '/overlays');
+}
+
 /**
- * BLOCK: Profile Block.
+ * BLOCK: Blocks
  */
-require_once(JMAYT_DIR . 'block/single/index.php');
-require_once(JMAYT_DIR . 'block/list/index.php');
+require_once(JMAYT_SINGLE_DIR . DIRECTORY_SEPARATOR . 'index.php');
+require_once(JMAYT_LIST_DIR . DIRECTORY_SEPARATOR . 'index.php');
 
 /*
  * function jma_yt_quicktags
@@ -62,9 +100,9 @@ function jmayt_quicktags()
 }
 add_action('admin_print_footer_scripts', 'jmayt_quicktags');
 
-wp_register_style('jmayt_bootstrap_css', plugins_url('/jmayt_bootstrap.css', __FILE__));
+wp_register_style('jmayt_bootstrap_css', JMAYT_CSS_URL . '/jmayt_bootstrap.css');
 wp_register_script('jmayt_api', 'https://www.youtube.com/player_api', array( 'jquery' ));
-wp_register_script('jmayt_js', plugins_url('/jmayt_js.min.js', __FILE__), array( 'jquery', 'jmayt_api' ));
+wp_register_script('jmayt_js', JMAYT_JS_URL . '/jmayt_js.min.js', array( 'jquery', 'jmayt_api' ));
 
 function jmayt_scripts()
 {
@@ -182,7 +220,7 @@ function jma_yt_autoloader($class_name)
     if (false !== strpos($class_name, 'JMAYt')) {
         $classes_dir = realpath(plugin_dir_path(__FILE__));
         $class_file = $class_name . '.php';
-        require_once $classes_dir . DIRECTORY_SEPARATOR . $class_file;
+        require_once JMAYT_CLASSES_DIR . DIRECTORY_SEPARATOR . $class_file;
     }
 }
 
@@ -308,7 +346,7 @@ $settings = array(
                 'label'			=> __('Font color for YouTube item titles', 'jmayt_textdomain'),
                 'description'	=> __('Null your theme\'s title color (item_font_color)', 'jmayt_textdomain'),
                 'type'			=> 'color',
-                'default'		=> '#21759B'
+                'default'		=> ''
             ),
             array(
                 'id' 			=> 'item_font_size',
@@ -337,14 +375,14 @@ $settings = array(
                 'label'			=> __('Background color for YouTube items', 'jmayt_textdomain'),
                 'description'	=> __('Null for no bg (item_bg)', 'jmayt_textdomain'),
                 'type'			=> 'color',
-                'default'		=> '#cbe0e9'
+                'default'		=> ''
             ),
             array(
                 'id' 			=> 'item_border',
                 'label'			=> __('Border color for YouTube items', 'jmayt_textdomain'),
                 'description'	=> __('Null for no border (item_border)', 'jmayt_textdomain'),
                 'type'			=> 'color',
-                'default'		=> '#21759B'
+                'default'		=> ''
             ),
             array(
                 'id' 			=> 'button_font',
@@ -707,6 +745,7 @@ function jma_yt_grid($atts)
 
     $you_tube_list = new JMAYtList($atts['yt_list_id'], $jmayt_api_code);
     //processing plugin options - form array of column atts and set defaults
+    $has_break = '';
     foreach ($jmayt_options_array as $i => $option) {
         if ((strpos($i, '_cols') !== false) && $option) {
             $i = str_replace('_cols', '', $i);

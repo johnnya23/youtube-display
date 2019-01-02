@@ -122,6 +122,7 @@ class JMAYtVideo
         //the relavent atributes to check for values
         $display_att_list = array( 'item_font_color', 'item_font_size', 'item_font_alignment', 'item_font_length', 'item_bg', 'item_border', 'item_gutter','item_spacing','button_font','button_bg', 'width', 'alignment' );
         //produce $display_atts with relavent values (if any)
+        $display_atts = array();
         foreach ($atts as $index => $att) {
             if (in_array($index, $display_att_list)) {
                 $trans_atts_id .= $index . $att;

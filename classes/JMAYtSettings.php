@@ -72,14 +72,15 @@ class JMAYtSettings
      */
     public function settings_assets()
     {
-        wp_enqueue_style('minicolors_style', plugin_dir_url(__FILE__) . '/minicolors.css');
-        wp_enqueue_script('minicolors_script', plugin_dir_url(__FILE__) . '/minicolors.js');
+        wp_enqueue_style('minicolors_style', JMAYT_ADMIN_URL . '/minicolors.min.css');
+
+        // INITIALIZED MINICOLRS AT THE END OF THIS FILE TO SAVE A FILE CALL
+        wp_enqueue_script('minicolors_script', JMAYT_ADMIN_URL . '/minicolors.min.js');
 
         // We're including the WP media scripts here because they're needed for the image upload field
         // If you're not including an image upload then you can leave this function call out
-        wp_enqueue_media();
+        // wp_enqueue_media();
 
-        wp_register_script($this->settings_base . 'admin-js', $this->assets_url . 'settings.js', array( 'minicolors_script', 'jquery' ), '1.0.0');
         wp_enqueue_script($this->settings_base . 'admin-js');
     }
 
