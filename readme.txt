@@ -189,3 +189,4 @@ https://bgrins.github.io/spectrum/
 * add content blocks for single videos and lists
 * replace colorpicker
 * display single videos with overlays
+* reorganize files

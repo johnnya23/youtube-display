@@ -304,7 +304,7 @@ form="jmaty_clear"  /></p>';
         $html = '<div class="wrap" id="' . $this->settings_base . 'settings">' . "\n";
         $html .= '<h2>' . __($this->page_title . ' Settings', $this->text_domain) . '</h2>' . "\n";
         $html .= '<form id="jmaty_clear" action="' . admin_url("admin-post.php") . '">';
-        $html .= '<input type="hidden" name="action" value="jmayt_clear_function">';
+        $html .= '<input type="hidden" name="action" value="jmayt_clear_images_function">';
         $html .= '</form>';
 
         $html .= '<form method="post" action="options.php" enctype="multipart/form-data">' . "\n";

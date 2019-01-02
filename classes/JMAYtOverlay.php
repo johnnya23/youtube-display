@@ -26,20 +26,18 @@ class JMAYtOverlay
     public function get_url()
     {
         $urls = $this->urls;
-        if (!is_dir(JMAYT_OVERLAYS_URL)) {
-            mkdir(JMAYT_OVERLAYS_URL, '0755');
+        if (!is_dir(JMAYT_OVERLAYS_DIR)) {
+            mkdir(JMAYT_OVERLAYS_DIR, '0755');
         }
-
         foreach ($urls as $url) {
             $ex = explode('.', basename($url));
             $ext = $ex[1];
             $return = JMAYT_OVERLAYS_URL . '/' . $this->id . '.' . $ext;
 
             //asign image to overlays folder with name of youtube id (plus extension)
-            $filename = $folder . '/' . $this->id . '.' . $ext;
             //check for image file in overlays folder
-            if (!file_exists($filename)) {
-                if ($this->fetch_image($url, $folder, $this->id)) {
+            if (!file_exists($return)) {
+                if ($this->fetch_image($url, JMAYT_OVERLAYS_DIR, $this->id)) {
                     break;//no need to check remaining images
                 }
             } else {

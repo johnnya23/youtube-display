@@ -31,7 +31,7 @@ function jmayt_toggle() {
             $scroll = jQuery(document).scrollTop();
             //get rid of scroll
             $parent = $this.parents('.jmayt-item');
-            $parent_width = $parent.innerWidth();
+            parent_width = $parent.innerWidth();
             $button = $this;
             $z_index = $fixed.parents('.jmayt-outer').parents().add($fixed);
             $parent.css('min-height', $parent.height() + 'px');
@@ -51,8 +51,8 @@ function jmayt_toggle() {
             $pos_top = $pos.top;
             $pos_left = $pos.left;
             $fixed.css({
-                'width': ($parent_width) + 'px',
-                'height': ($parent_width) / 1.7778 + 'px',
+                'width': (parent_width) + 'px',
+                'height': (parent_width) / 1.7778 + 'px',
                 'padding-bottom': 0
             }).animate({ //then we increase it's size while positioning it at the top left of the window
                 'top': -($pos_top - $scroll) + 'px',
@@ -75,13 +75,13 @@ function jmayt_toggle() {
     }
 
     function jmayt_hide_lightbox() {
-        if ($fixed.hasClass('jmayt-fixed')) { //adjust if toggle is backwards
+        if ($fixed.hasClass('jmayt-fixed')) { //adjust if toggle is backwards (BELOW)
             $this.html('&#xe140;');
             $fixed.animate({
                 'top': 0,
                 'left': 0,
-                'width': ($parent_width) + 'px',
-                'height': ($parent_width) / 1.7778 + 'px'
+                'width': (parent_width) + 'px',
+                'height': (parent_width) / 1.7778 + 'px'
             }, 300, 'swing', function() {
                 $fixed.removeClass('jmayt-fixed');
                 $fixed.css({
@@ -91,16 +91,16 @@ function jmayt_toggle() {
                     'width': '',
                     'padding-bottom': ''
                 });
-                $parent.css('min-height', '');
                 $z_index.css({
                     'z-index': '',
                     'overflow': ''
                 });
+                $video_win.css({
+                    'width': '',
+                    'padding-bottom': ''
+                });
             });
-            $video_win.css({
-                'width': '',
-                'padding-bottom': ''
-            });
+
             jQuery('body').css({
                 'overflow-y': ''
             });
