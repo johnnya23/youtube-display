@@ -17,10 +17,12 @@ class JMAYtStyles
             $pairs = array();
             for ($i = 1; $i < $numArgs; $i++) {
                 $x = $input[$i];
-                $pairs[] = array(
+                if (count($x)) {
+                    $pairs[] = array(
                     'property' => $x[0],
                     'value' => $x[1]
                 );
+                }
             }
             $add = array($input[0] => $pairs);
             $output = array_merge_recursive($output, $add);

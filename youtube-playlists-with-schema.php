@@ -108,16 +108,14 @@ function jmayt_quicktags()
 }
 add_action('admin_print_footer_scripts', 'jmayt_quicktags');
 
-wp_register_style('jmayt_bootstrap_css', JMAYT_CSS_URL . '/jmayt_bootstrap.min.css');
-wp_register_script('jmayt_api', 'https://www.youtube.com/player_api', array( 'jquery' ));
-wp_register_script('jmayt_js', JMAYT_JS_URL . '/jmayt_js.min.js', array( 'jquery', 'jmayt_api' ));
+
 
 function jmayt_scripts()
 {
+    wp_enqueue_style('jmayt_bootstrap_css', JMAYT_CSS_URL . '/jmayt_bootstrap.min.css');
+    wp_enqueue_script('jmayt_api', 'https://www.youtube.com/player_api', array( 'jquery' ));
+    wp_enqueue_script('jmayt_js', JMAYT_JS_URL . '/jmayt_js.min.js', array( 'jquery', 'jmayt_api' ));
     global $jmayt_options_array;
-    wp_enqueue_style('jmayt_bootstrap_css');
-    wp_enqueue_script('jmayt_api');
-    wp_enqueue_script('jmayt_js');
     $custom_css = JMAYtStyles::styles($jmayt_options_array);
     wp_add_inline_style('jmayt_bootstrap_css', $custom_css);
 }
@@ -516,11 +514,18 @@ function jma_yt_grid($atts)
     }
 
     ob_start();
-    $attributes = array(
-        'id' => $atts['id'],
-        'class' => $atts['class'] . $has_break . ' jmayt-list-wrap clearfix',
-        'style' => $style['gutter'] . $style['display'] . $atts['style']
-    );
+    $attributes = array();
+    if (isset($atts['id'])) {
+        $attributes['id'] = $atts['id'];
+    }
+    $attributes['class'] = 'jmayt-list-wrap clearfix ' . $has_break . ' ';
+    if (isset($atts['class'])) {
+        $attributes['class'] .= $atts['class'];
+    }
+    $attributes['style'] = $style['gutter'] . $style['display'];
+    if (isset($atts['style'])) {
+        $attributes['style'] = $atts['style'];
+    }
     echo '<div ';
     foreach ($attributes as $name => $attribute) {//build opening div ala html shortcode
         if ($attribute) {// check to make sure the attribute exists
@@ -528,7 +533,7 @@ function jma_yt_grid($atts)
         }
     }
     echo '>';
-    echo $you_tube_list->markup($responsive_cols, $offset, $max);
+    echo $you_tube_list->list_markup($responsive_cols, $offset, $max);
     echo '</div>';//yt-list-wrap
     $x = ob_get_contents();
     ob_end_clean();
@@ -567,11 +572,22 @@ function jma_yt_video_wrap_html($atts, $video_id)
     $atts = jmayt_sanitize_array($atts);
     $yt_video = new JMAYtVideo(sanitize_text_field($video_id), $jmayt_api_code);
     $style = $yt_video->process_display_atts($atts);
-    $attributes = array(
-        'id' => $atts['id'],
+    $attributes = array();
+    /*    'id' => $atts['id'],
         'class' => $atts['class'] . ' jmayt-outer jmayt-single-item clearfix',
         'style' => $style['display'] . $atts['style']
-    );
+    );*/
+    if (isset($atts['id'])) {
+        $attributes['id'] = $atts['id'];
+    }
+    $attributes['class'] = 'jmayt-outer jmayt-single-item clearfix ';
+    if (isset($atts['class'])) {
+        $attributes['class'] .= $atts['class'];
+    }
+    $attributes['style'] = $style['display'];
+    if (isset($atts['style'])) {
+        $attributes['style'] .= $atts['style'];
+    }
     echo '<div ';
     foreach ($attributes as $name => $attribute) {
         if ($attribute) {
@@ -579,7 +595,7 @@ function jma_yt_video_wrap_html($atts, $video_id)
         }
     }
     echo '>';
-    echo $yt_video->markup($atts['start']);
+    echo $yt_video->single_markup($atts['start']);
     echo '</div>';//jmayt-single-item-wrap
 }
 
@@ -654,8 +670,5 @@ function jmayt_on_deactivation_dc()
     $contents = @file_get_contents($htaccess);
     file_put_contents($htaccess, str_replace($jmayttxt, '', $contents));
 }
-
-
-//register_activation_hook(   __FILE__, 'jmayt_on_activation_wc' );
 
 register_deactivation_hook(__FILE__, 'jmayt_on_deactivation_dc');

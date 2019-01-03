@@ -27,12 +27,12 @@ class JMAYtList extends JMAYtVideo
                 $return = array_merge($return, $curl_array['items']);
             }
         } while ($next && $max > 0);
-        
+
         return $return;
     }
 
     /*
-     * function markup() creates transient id, checks for transient - if needed and sets up the column div
+     * function list_markup() creates transient id, checks for transient - if needed and sets up the column div
      * and gets the video items array using JMAYtList::yt_loop($this->id) calls single_html() as it
      * loops through the $yt_loop_items
      *
@@ -43,7 +43,7 @@ class JMAYtList extends JMAYtVideo
      * returns $return - video list html
      *
     * */
-    public function markup($res_cols = array(), $offset, $max)
+    public function list_markup($res_cols = array(), $offset, $max)
     {
         global $jmayt_options_array;
         $col_class = '';
