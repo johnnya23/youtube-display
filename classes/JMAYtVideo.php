@@ -302,7 +302,7 @@ class JMAYtVideo
                 $h3_title = substr($h3_title, 0, strpos($h3_title, "\n"));
                 $elipsis = '&nbsp;...';
             }
-            $start = $start > 0? '&amp;start=' . $start: '';
+            $start_text = $start > 0? '&amp;start=' . $start: '';
 
             $return .= '<div class="jmayt-item-wrap"' . $this->box_string . '>';
             $return .= '<div class="jmayt-item">';
@@ -311,11 +311,11 @@ class JMAYtVideo
             $return .= '<button class="jmayt-btn jmayt-sm" ' . $this->button_string . '>&#xe140;</button>';
             $return .= JMAYtVideo::jma_youtube_schema_html($meta_array);
             if (!$jmayt_options_array['cache_images']) {// single video or image caching off
-                $return .=  '<div><iframe src="' . $meta_array['embedURL']. '?rel=0&amp;showinfo=0'  . $start . '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
+                $return .=  '<div><iframe src="' . $meta_array['embedURL']. '?rel=0&amp;showinfo=0'  . $start_text . '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
             } else {
                 $overlay = new JMAYtOverlay(array($meta_array['standardUrl'], $meta_array['thumbnailUrl']), $id);
                 $image_url = $overlay->get_url();
-                $return .= '<button class="jmayt-overlay-button" data-embedid="' . $id . '"><img src="' . $image_url . '"/></button>';
+                $return .= '<button class="jmayt-overlay-button" data-start="' . $start . '" data-embedid="' . $id . '"><img src="' . $image_url . '"/></button>';
                 $return .=  '<div id="video' . $id . '" class="jmayt-hidden-iframe"></div>';
             }
             $return .= '</div>';//jma-responsive-wrap

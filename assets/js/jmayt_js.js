@@ -178,11 +178,13 @@ function onYouTubePlayerAPIReady() {
 function jmayt_setup_video($button) {
     // create the global player from the specific iframe (#video) jmayt-overlay-button
     $button_id = $button.data('embedid');
+    $start = $button.data('start');
     $player = new YT.Player('video' + $button_id, {
         videoId: $button_id,
         playerVars: {
             rel: 0,
-            enablejsapi: 1
+            enablejsapi: 1,
+            start: $start
         },
         events: {
             // call this function when player is ready to use
@@ -220,8 +222,9 @@ jQuery(window).load(function() {
     //only in the edit screen
     if (jQuery('body.wp-admin')) {
         jmayt_title_resize();
+    } else {
+        onYouTubePlayerAPIReady();
     }
-    onYouTubePlayerAPIReady();
 });
 
 jQuery(window).resize(function() {
