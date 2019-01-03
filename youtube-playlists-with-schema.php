@@ -129,7 +129,7 @@ function jmayt_template_redirect()
     if (jmayt_detect_shortcode(array('yt_grid', 'yt_video', 'yt_video_wrap', 'jmayt-single/block', 'jmayt-list/block')) || $jmayt_options_array['uni']) {
         add_action('wp_enqueue_scripts', 'jmayt_scripts');
     }
-    if (need_images()) {
+    if ($jmayt_options_array['cache'] && !is_dir(JMAYT_OVERLAYS_DIR)) {
         jmayt_clear_cache();
     }
 }
@@ -169,28 +169,6 @@ function jmayt_detect_shortcode($needle = '', $post_item = 0)
         $return = array_intersect($needle, $blocknames);
     }
     return apply_filters('jmayt_detect_shortcode_result', $return, $post, $needle);
-}
-
-function need_images()
-{
-    global $jmayt_options_array;
-    if (!$jmayt_options_array['cache']) {
-        return false;
-    } else {
-        if (!is_dir(JMAYT_OVERLAYS_DIR)) {
-            return true;
-        } else {
-            $handle = opendir(JMAYT_OVERLAYS_DIR);
-            while (false !== ($entry = readdir($handle))) {
-                if ($entry != "." && $entry != "..") {
-                    closedir($handle);
-                    return false;
-                }
-            }
-            closedir($handle);
-            return true;
-        }
-    }
 }
 
 $jmayt_db_option = 'jmayt_options_array';
