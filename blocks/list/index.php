@@ -53,6 +53,24 @@
             'query_offset' => array(
                 'type' => 'string',
             ),
+            'item_gutter' => array(
+                'type' => 'string',
+            ),
+            'item_spacing' => array(
+                'type' => 'string',
+            ),
+            'lg_cols' => array(
+                'type' => 'string',
+            ),
+            'md_cols' => array(
+                'type' => 'string',
+            ),
+            'sm_cols' => array(
+                'type' => 'string',
+            ),
+            'xs_cols' => array(
+                'type' => 'string',
+            ),
         ),
         'editor_script' => 'jma-yt-list-block-script',
         'render_callback' => 'jma_yt_grid',

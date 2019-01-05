@@ -17,9 +17,17 @@
 
         edit: function(props) {
             var attributes = props.attributes
+
             var yt_list_id = props.attributes.yt_list_id
             var query_max = props.attributes.query_max
             var query_offset = props.attributes.query_offset
+            var item_gutter = props.attributes.item_gutter
+            var item_spacing = props.attributes.item_spacing
+            var lg_cols = props.attributes.lg_cols
+            var md_cols = props.attributes.md_cols
+            var sm_cols = props.attributes.sm_cols
+            var xs_cols = props.attributes.xs_cols
+
             var ServerSideRender = wp.components.ServerSideRender
 
             function onChangeAlignment(newAlignment) {
@@ -52,6 +60,10 @@
                                 })
                             }
                         }),
+                        el('p', {}, i18n.__('The values below are all optional and can be left blank to follow the options set on the plugin "Settings page" - Settings > YouTube Playlists with Schema')),
+
+                        el('p', {}, i18n.__('Color settings can be overridden by adding a custom class under "Advanced" (below), then overwriting with custom css')),
+
                         el(TextControl, {
                             type: 'number',
                             label: i18n.__('Max to Display (blank for all)'),
@@ -69,6 +81,66 @@
                             onChange: function(newquery_offset) {
                                 props.setAttributes({
                                     query_offset: newquery_offset
+                                })
+                            }
+                        }),
+                        el(TextControl, {
+                            type: 'number',
+                            label: i18n.__('Grid horizontal spacing - in px between YouTube grid items - best results even number between 0 and 30 (item_gutter)'),
+                            value: item_gutter,
+                            onChange: function(newitem_gutter) {
+                                props.setAttributes({
+                                    item_gutter: newitem_gutter
+                                })
+                            }
+                        }),
+                        el(TextControl, {
+                            type: 'number',
+                            label: i18n.__('Grid vertical spacing - in px between YouTube grid items (item_spacing)'),
+                            value: item_spacing,
+                            onChange: function(newitem_spacing) {
+                                props.setAttributes({
+                                    item_spacing: newitem_spacing
+                                })
+                            }
+                        }),
+                        el(TextControl, {
+                            type: 'number',
+                            label: i18n.__('Large device columns (lg_cols) - for window width 1200+ px - blank uses value from setting below.'),
+                            value: lg_cols,
+                            onChange: function(newlg_cols) {
+                                props.setAttributes({
+                                    lg_cols: newlg_cols
+                                })
+                            }
+                        }),
+                        el(TextControl, {
+                            type: 'number',
+                            label: i18n.__('Medium device columns (md_cols) - for window width 992+ px - blank uses value from setting below.'),
+                            value: md_cols,
+                            onChange: function(newmd_cols) {
+                                props.setAttributes({
+                                    md_cols: newmd_cols
+                                })
+                            }
+                        }),
+                        el(TextControl, {
+                            type: 'number',
+                            label: i18n.__('Small device columns (sm_cols) - for window width 768+ px - blank uses value from setting below.'),
+                            value: sm_cols,
+                            onChange: function(newsm_cols) {
+                                props.setAttributes({
+                                    sm_cols: newsm_cols
+                                })
+                            }
+                        }),
+                        el(TextControl, {
+                            type: 'number',
+                            label: i18n.__('Extra small device columns (xs_cols) - for window width -768 px.'),
+                            value: xs_cols,
+                            onChange: function(newxs_cols) {
+                                props.setAttributes({
+                                    xs_cols: newxs_cols
                                 })
                             }
                         })
