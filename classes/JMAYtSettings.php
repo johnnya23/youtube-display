@@ -178,6 +178,7 @@ class JMAYtSettings
             case 'password':
             case 'number':
                 $style = esc_attr($field['id']) == 'api'? ' style="width: 350px; max-width: 100%" ': '';
+                $data = esc_attr($field['id']) == 'cache' && $data < 60? 60: $data;
                 $html .= '<input id="' . esc_attr($field['id']) . '"' . $style . 'type="' . $field['type'] . '" name="' . esc_attr($option_name) . '" placeholder="' . esc_attr($placeholder) . '" value="' . $data . '"/>' . "\n";
                 break;
             case 'submit':/* THIS IS JUST HARDCODED TO ENABLE BUTTON PLACEMENT WITHIN FORM */

@@ -92,7 +92,10 @@ class JMAYtVideo
         $yt_meta_array_items['logo_height'] = $logo['height'] > 60? 60: $logo['height'];
         $yt_meta_array_items['description'] = trim($snippet['description'])?$snippet['description']: $snippet['title'];
         $yt_meta_array_items['thumbnailUrl'] = $snippet['thumbnails']['default']['url'];
-        $yt_meta_array_items['standardUrl'] = $snippet['thumbnails']['standard']['url'];
+        $yt_meta_array_items['standardUrl'] = '';
+        if (isset($snippet['thumbnails']['standard'])) {
+            $yt_meta_array_items['standardUrl'] = $snippet['thumbnails']['standard']['url'];
+        }
         $yt_meta_array_items['embedURL'] = 'https://www.youtube-nocookie.com/embed/' . $id;
         $yt_meta_array_items['uploadDate'] = $snippet['publishedAt'];
         $yt_meta_array_items['interactionCount'] = $data['statistics']['viewCount'];
@@ -156,24 +159,21 @@ class JMAYtVideo
                 $col_space = sprintf($format, $spacing, $gutter);
                 $this->col_space = $col_space;
             }
-            //single box width and alignment
-            if ($width || $alignment) {
-                $return['display'] = $width? 'width:' . $width . ';': '';
-                if ($alignment == 'right' || $alignment == 'left') {
-                    $return['display'] .= 'float:' . $alignment . ';';
-                    $return['display'] .= 'margin-top: 5px;';
-                    $op = $alignment == 'left'? 'right':'left';
-                    $return['display'] .= 'margin-' . $op . ':20px;';
+            //single width and align and/or list box border and bg
+            $jmayt_item_wrap_align = $box_styles = '';
+            $jmayt_item_wrap = ' class="jmayt-item-wrap"';
+            if ($item_bg || $item_border || $width || $alignment) {
+                if ($alignment) {
+                    $jmayt_item_wrap_align = ' align' . $alignment;
                 }
-            }
-            //single or list box border and bg
-            if ($item_bg || $item_border) {
+                $width = $width? 'width:' . $width . ';': '';
                 $bg = $item_bg? 'background-color:' . $item_bg . ';':'';
                 $border = $item_border? 'border:solid 2px ' . $item_border . '':'';
-                $format = ' style="%s%s" ';
-                $box_string = sprintf($format, $bg, $border);
-                $this->box_string = $box_string;
+                $format = ' style="%s%s%s" ';
+                $box_styles = sprintf($format, $bg, $border, $width);
             }
+            $jmayt_item_wrap = str_replace('jmayt-item-wrap"', 'jmayt-item-wrap' . $jmayt_item_wrap_align . '"', $jmayt_item_wrap);
+            $this->box_string = $jmayt_item_wrap . $box_styles;
             //expansion button font color and bg
             if ($button_font || $button_bg) {
                 $color = $button_font? 'color:' . $button_font . ';':'';
@@ -289,7 +289,7 @@ class JMAYtVideo
         } else {
             $meta_array = JMAYtVideo::map_meta($data, $id);
             $h3_title = $meta_array['name'];
-            $elipsis = '';
+            $elipsis = $return = '';
             if ($this->item_font_length == -23  && $jmayt_options_array['item_font_length']) {
                 $length = $jmayt_options_array['item_font_length'];
             } elseif ($this->item_font_length > 0) {
@@ -304,7 +304,7 @@ class JMAYtVideo
             }
             $start_text = $start > 0? '&amp;start=' . $start: '';
 
-            $return .= '<div class="jmayt-item-wrap"' . $this->box_string . '>';
+            $return .= '<div' . $this->box_string . '>';
             $return .= '<div class="jmayt-item">';
             $return .= '<div class="jmayt-video-wrap">';
             $return .= '<div class="jma-responsive-wrap" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">';

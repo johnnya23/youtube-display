@@ -124,11 +124,14 @@ add_action('enqueue_block_editor_assets', 'jmayt_scripts');
 function jmayt_template_redirect()
 {
     global $jmayt_options_array;
+    //enque only when necessary or universal option selected
     if (jmayt_detect_shortcode(array('yt_grid', 'yt_video', 'yt_video_wrap', 'jmayt-single/block', 'jmayt-list/block')) || $jmayt_options_array['uni']) {
         add_action('wp_enqueue_scripts', 'jmayt_scripts');
-    }
-    if ($jmayt_options_array['cache'] && !is_dir(JMAYT_OVERLAYS_DIR)) {
-        jmayt_clear_cache();
+        //check for overlays dir and clear plugin trasients if not there,
+        //so images are generated during page load
+        if ($jmayt_options_array['cache'] && !is_dir(JMAYT_OVERLAYS_DIR)) {
+            jmayt_clear_cache();
+        }
     }
 }
 add_action('template_redirect', 'jmayt_template_redirect');
@@ -153,6 +156,7 @@ function jmayt_detect_shortcode($needle = '', $post_item = 0)
     } else {
         global $post;
     }
+    $return = false;
     $pattern = get_shortcode_regex();
 
     preg_match_all('/'. $pattern .'/s', $post->post_content, $matches);
@@ -160,7 +164,8 @@ function jmayt_detect_shortcode($needle = '', $post_item = 0)
     //if shortcode(s) to be searched for were passed and not found $return false
     if (count($matches[2])) {
         $return = array_intersect($needle, $matches[2]);
-    } elseif (has_blocks($post->post_content)) {
+    }//next check for blocks
+    elseif (has_blocks($post->post_content)) {
         foreach (parse_blocks($post->post_content) as $block) {
             $blocknames[] = $block['blockName'];
         }
@@ -251,8 +256,8 @@ $settings = array(
             ),
             array(
                 'id' 			=> 'cache',
-                'label'			=> __('Cache Time', 'jmayt_textdomain'),
-                'description'	=> __('Frequency of checks back to YouTube for info. Larger number for quicker page loads and to avoid hitting YouTube Api limits (3600 = 1 hr or 0 for testing only).', 'jmayt_textdomain'),
+                'label'			=> __('Cache Time (min 60)', 'jmayt_textdomain'),
+                'description'	=> __('Frequency of checks back to YouTube for info MINIMUM 60. Larger number for quicker page loads and to avoid hitting YouTube Api limits.', 'jmayt_textdomain'),
                 'type'			=> 'number',
                 'default'		=> '3600'
             ),
@@ -429,7 +434,7 @@ $settings = array(
 );
 
 
-
+//instantiate the settings page
 if (is_admin()) {
     $jma_settings_page = new JMAYtSettings(
         array(
@@ -440,6 +445,7 @@ if (is_admin()) {
         );
 }
 
+//for block/ shortcode functions below
 function jmayt_sanitize_array($inputs)
 {
     if (is_array($inputs) && count($inputs)) {
@@ -467,6 +473,7 @@ function jma_yt_grid($atts)
     if (!isset($atts['query_max'])) {
         $atts['query_max'] = 0;
     }
+    //gives the block something to display initially
     if (!$atts['yt_list_id']) {
         return 'Enter a list id';
     }
@@ -487,7 +494,7 @@ function jma_yt_grid($atts)
     $count = 0;
     $style = $you_tube_list->process_display_atts($atts);
     foreach ($atts as $index => $att) {
-        if (strpos($index, '_cols') !== false) {
+        if (strpos($index, '_cols') !== false && $att > 0) {
             //processing shortcode attributes - clear defaults the first time we find a _cols attribute
             if (!$count) {
                 $responsive_cols = array();
@@ -522,7 +529,7 @@ function jma_yt_grid($atts)
     if (isset($atts['class'])) {
         $attributes['class'] .= $atts['class'];
     }
-    $attributes['style'] = $style['gutter'] . $style['display'];
+    $attributes['style'] = $style['gutter'];
     if (isset($atts['style'])) {
         $attributes['style'] = $atts['style'];
     }
@@ -561,6 +568,7 @@ function jmayt_id_from_url($url)
 
 /**
  * function jma_yt_video_wrap_html shortcode for the grid
+ * also we feed the block both indiviual shortcodes into this
  * @param array $atts - the shortcode attributes
  * @param string $video_id - the video id (either previously extracted from $atts or from content
  * (depending on whether its the wrap shortcode)
@@ -571,20 +579,17 @@ function jma_yt_video_wrap_html($atts, $video_id)
     global $jmayt_api_code;
     $atts = jmayt_sanitize_array($atts);
     $yt_video = new JMAYtVideo(sanitize_text_field($video_id), $jmayt_api_code);
-    $style = $yt_video->process_display_atts($atts);
+    $yt_video->process_display_atts($atts);
     $attributes = array();
-    /*    'id' => $atts['id'],
-        'class' => $atts['class'] . ' jmayt-outer jmayt-single-item clearfix',
-        'style' => $style['display'] . $atts['style']
-    );*/
+
     if (isset($atts['id'])) {
         $attributes['id'] = $atts['id'];
     }
-    $attributes['class'] = 'jmayt-outer jmayt-single-item clearfix ';
+    $attributes['class'] = 'wp-block-image jmayt-outer jmayt-single-item ';
     if (isset($atts['class'])) {
         $attributes['class'] .= $atts['class'];
     }
-    $attributes['style'] = $style['display'];
+    $attributes['style'] = '';
     if (isset($atts['style'])) {
         $attributes['style'] .= $atts['style'];
     }
@@ -639,14 +644,16 @@ function jma_yt_video_wrap($atts, $content = null)
 }
 add_shortcode('yt_video_wrap', 'jma_yt_video_wrap');
 
+
+$jmayttxt = "
+# WP Maximum Execution Time Exceeded
+<IfModule mod_php5.c>
+	php_value max_execution_time 300
+</IfModule>";
+
 function jmayt_on_activation_wc()
 {
-    $jmayttxt = "
-	# WP Maximum Execution Time Exceeded
-	<IfModule mod_php5.c>
-		php_value max_execution_time 300
-	</IfModule>";
-
+    global $jmayttxt;
     $htaccess = get_home_path().'.htaccess';
     $contents = @file_get_contents($htaccess);
     if (!strpos($htaccess, $jmayttxt)) {
@@ -660,12 +667,7 @@ function jmayt_on_activation_wc()
 
 function jmayt_on_deactivation_dc()
 {
-    $jmayttxt = "
-	# WP Maximum Execution Time Exceeded
-	<IfModule mod_php5.c>
-		php_value max_execution_time 300
-	</IfModule>";
-
+    global $jmayttxt;
     $htaccess = get_home_path().'.htaccess';
     $contents = @file_get_contents($htaccess);
     file_put_contents($htaccess, str_replace($jmayttxt, '', $contents));

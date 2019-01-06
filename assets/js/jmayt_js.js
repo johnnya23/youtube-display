@@ -11,6 +11,9 @@ function jmayt_title_resize() {
 
 function jmayt_toggle() {
     //create the toggle lightbox effect for the youtube items
+
+    //apply the toggle effect to the area around the video
+    //when it is expanded
     jQuery('.jmayt-video-wrap').click(function() {
         if (jQuery(this).hasClass('jmayt-fixed'))
             jmayt_hide_lightbox();
@@ -23,7 +26,7 @@ function jmayt_toggle() {
     });
 
     function jmayt_show_lightbox() {
-        if (jQuery(this).is('button')) //keep $this if toggle is backwards
+        if (jQuery(this).is('button')) //keep $this if toggle is backwards (see 'else' below)
             $this = jQuery(this);
         $fixed = $this.parents('.jmayt-video-wrap');
         if (!$fixed.hasClass('jmayt-fixed')) { //make sure toggle is not backwards

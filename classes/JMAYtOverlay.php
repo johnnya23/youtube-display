@@ -31,7 +31,7 @@ class JMAYtOverlay
         }
         foreach ($urls as $url) {
             $ex = explode('.', basename($url));
-            $ext = $ex[1];
+            $ext = isset($ex[1])? $ex[1]: 'jpg';
             $return = JMAYT_OVERLAYS_URL . '/' . $this->id . '.' . $ext;
 
             //asign image to overlays folder with name of youtube id (plus extension)
