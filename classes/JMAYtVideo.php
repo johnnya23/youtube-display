@@ -143,7 +143,7 @@ class JMAYtVideo
             extract($display_atts);
             $this->trans_atts_id = $trans_atts_id;
             //number of characters in h3
-            if (isset($item_font_length)) {
+            if ($item_font_length) {
                 $this->item_font_length = $item_font_length;
             }
             //box gutter and vertical spacing

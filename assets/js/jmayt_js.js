@@ -214,6 +214,9 @@ jQuery(window).scroll(function() {
     hold_fixed();
     if (jQuery('body').hasClass('jmayt_loaded'))
         onYouTubePlayerAPIReady();
+    if (jQuery('body').hasClass('wp-admin')) {
+        jmayt_title_resize();
+    }
 });
 
 jQuery(document).ready(function() {
@@ -223,7 +226,7 @@ jQuery(document).ready(function() {
 jQuery(window).load(function() {
     jmayt_toggle();
     //only in the edit screen
-    if (jQuery('body.wp-admin')) {
+    if (jQuery('body').hasClass('wp-admin')) {
         jmayt_title_resize();
     } else {
         onYouTubePlayerAPIReady();

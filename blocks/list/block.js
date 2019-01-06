@@ -21,6 +21,7 @@
             var yt_list_id = props.attributes.yt_list_id
             var query_max = props.attributes.query_max
             var query_offset = props.attributes.query_offset
+            var item_font_length = props.attributes.item_font_length
             var item_gutter = props.attributes.item_gutter
             var item_spacing = props.attributes.item_spacing
             var lg_cols = props.attributes.lg_cols
@@ -86,7 +87,17 @@
                         }),
                         el(TextControl, {
                             type: 'number',
-                            label: i18n.__('Grid horizontal spacing - in px between YouTube grid items - best results even number between 0 and 30 (item_gutter)'),
+                            label: i18n.__('The maximun number of characters for YouTube item titles'),
+                            value: item_font_length,
+                            onChange: function(newitem_font_length) {
+                                props.setAttributes({
+                                    item_font_length: newitem_font_length
+                                })
+                            }
+                        }),
+                        el(TextControl, {
+                            type: 'number',
+                            label: i18n.__('Grid horizontal spacing - in px between YouTube grid items - best results even number between 0 and 30'),
                             value: item_gutter,
                             onChange: function(newitem_gutter) {
                                 props.setAttributes({
@@ -96,7 +107,7 @@
                         }),
                         el(TextControl, {
                             type: 'number',
-                            label: i18n.__('Grid vertical spacing - in px between YouTube grid items (item_spacing)'),
+                            label: i18n.__('Grid vertical spacing - in px between YouTube grid items'),
                             value: item_spacing,
                             onChange: function(newitem_spacing) {
                                 props.setAttributes({
@@ -106,7 +117,7 @@
                         }),
                         el(TextControl, {
                             type: 'number',
-                            label: i18n.__('Large device columns (lg_cols) - for window width 1200+ px - blank uses value from setting below.'),
+                            label: i18n.__('Large device columns - for window width 1200+ px - blank uses value from setting below.'),
                             value: lg_cols,
                             onChange: function(newlg_cols) {
                                 props.setAttributes({
@@ -116,7 +127,7 @@
                         }),
                         el(TextControl, {
                             type: 'number',
-                            label: i18n.__('Medium device columns (md_cols) - for window width 992+ px - blank uses value from setting below.'),
+                            label: i18n.__('Medium device columns - for window width 992+ px - blank uses value from setting below.'),
                             value: md_cols,
                             onChange: function(newmd_cols) {
                                 props.setAttributes({
@@ -126,7 +137,7 @@
                         }),
                         el(TextControl, {
                             type: 'number',
-                            label: i18n.__('Small device columns (sm_cols) - for window width 768+ px - blank uses value from setting below.'),
+                            label: i18n.__('Small device columns - for window width 768+ px - blank uses value from setting below.'),
                             value: sm_cols,
                             onChange: function(newsm_cols) {
                                 props.setAttributes({
@@ -136,7 +147,7 @@
                         }),
                         el(TextControl, {
                             type: 'number',
-                            label: i18n.__('Extra small device columns (xs_cols) - for window width -768 px.'),
+                            label: i18n.__('Extra small device columns - for window width -768 px.'),
                             value: xs_cols,
                             onChange: function(newxs_cols) {
                                 props.setAttributes({

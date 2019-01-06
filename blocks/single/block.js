@@ -20,6 +20,7 @@
             var alignment = props.attributes.alignment
             var video_id = props.attributes.video_id
             var width = props.attributes.width
+            var item_font_length = props.attributes.item_font_length
             var start = props.attributes.start
             var ServerSideRender = wp.components.ServerSideRender
 
@@ -60,6 +61,9 @@
                                 })
                             }
                         }),
+                        el('p', {}, i18n.__('The values below are all optional and can be left blank to follow the options set on the plugin "Settings page" - Settings > YouTube Playlists with Schema')),
+
+                        el('p', {}, i18n.__('Color settings can be overridden by adding a custom class under "Advanced" (below), then overwriting with custom css')),
                         // Width number field option.
                         el(TextControl, {
                             type: 'text',
@@ -71,10 +75,20 @@
                                 })
                             }
                         }),
+                        el(TextControl, {
+                            type: 'number',
+                            label: i18n.__('The maximum number of characters for YouTube item titles'),
+                            value: item_font_length,
+                            onChange: function(newitem_font_length) {
+                                props.setAttributes({
+                                    item_font_length: newitem_font_length
+                                })
+                            }
+                        }),
                         // Width number field option.
                         el(TextControl, {
                             type: 'number',
-                            label: i18n.__('Start time in seconds'),
+                            label: i18n.__('Start time in seconds (optional on a single item by item basis)'),
                             value: start,
                             onChange: function(newstart) {
                                 props.setAttributes({

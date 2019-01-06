@@ -53,6 +53,9 @@
             'query_offset' => array(
                 'type' => 'string',
             ),
+            'item_font_length' => array(
+                'type' => 'string',
+            ),
             'item_gutter' => array(
                 'type' => 'string',
             ),

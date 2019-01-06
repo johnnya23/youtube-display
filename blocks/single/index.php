@@ -50,6 +50,9 @@
             'width' => array(
                 'type' => 'string',
             ),
+            'item_font_length' => array(
+                'type' => 'string',
+            ),
             'start' => array(
                 'type' => 'string',
             ),
