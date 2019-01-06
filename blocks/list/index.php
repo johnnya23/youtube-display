@@ -41,7 +41,7 @@
      // We also specify the editor script to be used in the Gutenberg interface.
      register_block_type('jmayt-list/block', array(
         'attributes'      => array(
-            'yt_list_id' => array(
+            'id' => array(
                 'type' => 'string',
             ),
             'className' => array(

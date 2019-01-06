@@ -470,18 +470,24 @@ function jma_yt_grid($atts)
     global $jmayt_options_array;
     $jmayt_api_code = $jmayt_options_array['api'];
     $atts = jmayt_sanitize_array($atts);
+    // make backward compatible for shortcodes
+    $old_css_id = '';
+    if (isset($atts['yt_list_id'])) {
+        $old_css_id = isset($atts['id']) && $atts['id']? ' ' . $atts['id']: '';
+        $atts['id'] = $atts['yt_list_id'];
+    }
     if (!isset($atts['query_max'])) {
         $atts['query_max'] = 0;
     }
     //gives the block something to display initially
-    if (!$atts['yt_list_id']) {
+    if (!$atts['id']) {
         return 'Enter a list id';
     }
     if (isset($atts['className'])) {
         $atts['class'] = $atts['className'];
     }
 
-    $you_tube_list = new JMAYtList($atts['yt_list_id'], $jmayt_api_code);
+    $you_tube_list = new JMAYtList($atts, $jmayt_api_code);
     //processing plugin options - form array of column atts and set defaults
     $has_break = '';
     foreach ($jmayt_options_array as $i => $option) {
@@ -492,7 +498,7 @@ function jma_yt_grid($atts)
         }
     }
     $count = 0;
-    $style = $you_tube_list->process_display_atts($atts);
+    //$style = $you_tube_list->process_display_atts($atts);
     foreach ($atts as $index => $att) {
         if (strpos($index, '_cols') !== false && $att > 0) {
             //processing shortcode attributes - clear defaults the first time we find a _cols attribute
@@ -522,14 +528,16 @@ function jma_yt_grid($atts)
 
     ob_start();
     $attributes = array();
-    if (isset($atts['id'])) {
-        $attributes['id'] = $atts['id'];
-    }
+    $attributes['id'] = 'jmaty_' . $atts['id'] . $old_css_id;
     $attributes['class'] = 'jmayt-list-wrap clearfix ' . $has_break . ' ';
     if (isset($atts['class'])) {
         $attributes['class'] .= $atts['class'];
     }
-    $attributes['style'] = $style['gutter'];
+    //pull the grid back out to account for gutters
+    $item_gutter_raw = isset($atts['item_gutter'])? $atts['item_gutter']: $jmayt_options_array['item_gutter'];
+    $item_gutter = floor($item_gutter_raw/2);
+    $attributes['style'] = 'margin-left:-' . $item_gutter . 'px;margin-right:-' . $item_gutter . 'px;';
+    //$attributes['style'] = $style['gutter'];
     if (isset($atts['style'])) {
         $attributes['style'] = $atts['style'];
     }
@@ -574,17 +582,16 @@ function jmayt_id_from_url($url)
  * (depending on whether its the wrap shortcode)
  * @return the shortcode string
  */
-function jma_yt_video_wrap_html($atts, $video_id)
+function jma_yt_video_wrap_html($atts)
 {
     global $jmayt_api_code;
     $atts = jmayt_sanitize_array($atts);
-    $yt_video = new JMAYtVideo(sanitize_text_field($video_id), $jmayt_api_code);
+    $yt_video = new JMAYtVideo($atts, $jmayt_api_code);
     $yt_video->process_display_atts($atts);
     $attributes = array();
 
-    if (isset($atts['id'])) {
-        $attributes['id'] = $atts['id'];
-    }
+    $old_css_id = isset($atts['old_css_id']) && $atts['old_css_id']? ' ' . $atts['old_css_id']: '';
+    $attributes['id'] = 'jmaty_' . $atts['id'] . $old_css_id;
     $attributes['class'] = 'wp-block-image jmayt-outer jmayt-single-item ';
     if (isset($atts['class'])) {
         $attributes['class'] .= $atts['class'];
@@ -600,7 +607,7 @@ function jma_yt_video_wrap_html($atts, $video_id)
         }
     }
     echo '>';
-    echo $yt_video->single_markup($atts['start']);
+    echo $yt_video->single_markup();
     echo '</div>';//jmayt-single-item-wrap
 }
 
@@ -611,15 +618,19 @@ function jma_yt_video_wrap_html($atts, $video_id)
  */
 function jma_yt_video($atts)
 {
-    $video_id = $atts['video_id'];
-    if (!$video_id) {
+    // make backward compatible for shortcodes
+    if (isset($atts['video_id'])) {
+        $atts['old_css_id'] = isset($atts['id']) && $atts['id']? ' ' . $atts['id']: '';
+        $atts['id'] = $atts['video_id'];
+    }
+    if (!isset($atts['id']) || !$atts['id']) {
         return 'please enter a video id';
     }
     if (isset($atts['className'])) {
         $atts['class'] = $atts['className'];
     }
     ob_start();
-    jma_yt_video_wrap_html($atts, $video_id);
+    jma_yt_video_wrap_html($atts);
     $x = ob_get_contents();
     ob_end_clean();
 
@@ -635,9 +646,10 @@ add_shortcode('yt_video', 'jma_yt_video');
  */
 function jma_yt_video_wrap($atts, $content = null)
 {
-    $video_id = jmayt_id_from_url($content);
+    $atts['old_css_id'] = isset($atts['id']) && $atts['id']? ' ' . $atts['id']: '';
+    $atts['id'] = jmayt_id_from_url($content);
     ob_start();
-    jma_yt_video_wrap_html($atts, $video_id);
+    jma_yt_video_wrap_html($atts);
     $x = ob_get_contents();
     ob_end_clean();
     return str_replace("\r\n", '', $x);

@@ -9,11 +9,13 @@ class JMAYtVideo
     public $h3_string;
     public $trans_atts_id;
     public $item_font_length;
+    public $start;
 
-    public function __construct($id_code, $api_code)
+    public function __construct($atts, $api_code)
     {
         $this->api = $api_code;
-        $this->id = $id_code;
+        $this->id = $atts['id'];
+        $this->process_display_atts($atts);
     }
     protected function curl($url)
     {
@@ -105,6 +107,7 @@ class JMAYtVideo
 
     /*
      * function process_display_atts() processes relavent attributes (if present) into object properties
+     * overwriting plugin settings with block/shortcode attributes where appropriate
      * for use by single_html() and single_markup()
      * @param array $atts shortcode attributes to be processed
      *
@@ -120,15 +123,16 @@ class JMAYtVideo
         $this->h3_string =
         $this->trans_atts_id = '';
         $this->item_font_length = -23;
+        $this->start = 0;
 
-        $return = array();
         //the relavent atributes to check for values
-        $display_att_list = array( 'item_font_color', 'item_font_size', 'item_font_alignment', 'item_font_length', 'item_bg', 'item_border', 'item_gutter','item_spacing','button_font','button_bg', 'width', 'alignment' );
+        $display_att_list = array( 'item_font_color', 'item_font_size', 'item_font_alignment', 'item_font_length', 'item_bg', 'item_border', 'item_gutter','item_spacing','button_font','button_bg', 'width', 'alignment', 'start' );
         //produce $display_atts with relavent values (if any)
         $match = false;
         $trans_atts_id = '';
         foreach ($display_att_list as $index) {
-            if (isset($atts[$index])) {
+            if (isset($atts[$index]) && $atts[$index]) {
+                //update transient id with active index value pairs
                 $trans_atts_id .= $index . $atts[$index];
                 $display_atts[$index] = $atts[$index];
                 $match = true;
@@ -137,14 +141,16 @@ class JMAYtVideo
             }
         }
         //check for values and process producing style strings for each
-        $return['gutter'] = '';
-        $return['display'] = '';
         if ($match) {
             extract($display_atts);
             $this->trans_atts_id = $trans_atts_id;
             //number of characters in h3
             if ($item_font_length) {
                 $this->item_font_length = $item_font_length;
+            }
+            //video start time
+            if ($start) {
+                $this->start = $start;
             }
             //box gutter and vertical spacing
             if ($item_gutter || $item_spacing) {
@@ -192,7 +198,7 @@ class JMAYtVideo
                 $this->h3_string = $h3_string;
             }
         }
-        return $return;
+        //return $return;
     }
 
     /*
@@ -225,53 +231,6 @@ class JMAYtVideo
         return $return;
     }
 
-
-    protected function error_handler($string)
-    {
-        switch ($string) {//keyInvalid, playlistNotFound, accessNotConfigured or quotaExceeded, ipRefererBlocked, keyExpired, videoNotFound
-            case 'keyInvalid':
-            case 'keyExpired':
-            $explaination = '<p>keyInvalid or keyExpired:<br/>';
-            $explaination .= 'Either the api value is blank or the wrong value has been inserted for the api value see: WordPress Dashboard > Settings > YouTube Playlists with Schema';
-            $explaination .= '</p>';
-                break;
-            case 'accessNotConfigured':
-            case 'quotaExceeded':
-            $explaination = '<p>accessNotConfigured or quotaExceeded:<br/>';
-            $explaination .= 'This generally means that the YouTube Data Api is not enalbed for your Google Project. Try going <a href="https://console.developers.google.com/apis/api/" target="_blank" >here</a> make sure you are in the correct project. Find the api under the Library tab and click "Enable" toward the top of the tab content';
-            $explaination .= '</p>';
-                break;
-            case 'ipRefererBlocked':
-                $explaination = '<p>ipRefererBlocked:<br/>';
-                $explaination .= 'This generally means that the domain for this website is excluded by restrictions set on the api credentials.  Try going <a href="https://console.developers.google.com/apis/api/" target="_blank" >here</a> make sure you are in the correct project. Find the api key under the Credentials tab and click the edit pencil. A common mistake is "*.domain.com/*" the first dot often needs to be removed if the domain is not on a "www" format.';
-                $explaination .= '</p>';
-                break;
-            case 'playlistNotFound':
-            case 'videoNotFound':
-            $explaination = '<p>playlistNotFound or videoNotFound:<br/>';
-            $explaination .= '<strong>Good News! </strong>Your api code is correct either the video id or plylist id is incorrect';
-            $explaination .= '</p>';
-                break;
-            default:
-                $explaination = '<p>Unknown:<br/>';
-                $explaination .= 'Unknown error. Make sure the list or video is public. Check value at: WordPress Dashboard > Settings > YouTube Playlists with Schema. Check settings <a href="https://console.developers.google.com/apis/api/" target="_blank" >here</a>.';
-                $explaination .= '</p>';
-        }
-        $return = '<div class="doink-wrap"><h2>doink</h2>';
-        $return .= '<p>';
-        $return .= 'There are several possible reasons for an error (keyInvalid or keyExpired, accessNotConfigured or quotaExceeded, ipRefererBlocked, playlistNotFound or videoNotFound)';
-        $return .= '</p>';
-        $return .= '<p>';
-        $return .= 'Current error:<strong>' . $string . '</strong>';
-        $return .= '</p>';
-        $return .= '<p>';
-        $return .= $explaination;
-        $return .= '</p>';
-        $return .= '</div>';
-
-        return $return;
-    }
-
     /*
      * function single_html()
      * @param string $id - the video id
@@ -279,14 +238,15 @@ class JMAYtVideo
      * returns video box html
      *
     * */
-    protected function single_html($id, $list = false, $start = 0)
+    protected function single_html($id, $list = false)
     {
         global $jmayt_options_array;
+        $start = $this->start;
         $data = JMAYtVideo::video_snippet($id);
-        $snippet = $data['snippet'];
         if (is_string($data)) {
             return JMAYtVideo::error_handler($data);
         } else {
+            $snippet = $data['snippet'];
             $meta_array = JMAYtVideo::map_meta($data, $id);
             $h3_title = $meta_array['name'];
             $elipsis = $return = '';
@@ -336,15 +296,62 @@ class JMAYtVideo
      * returns video html
      *
     * */
-    public function single_markup($start = 0)
+    public function single_markup()
     {
         global $jmayt_options_array;
-        $trans_id = 'jmaytvideo' . $this->id . $this->trans_atts_id . $start;
+        $trans_id = 'jmaytvideo' . $this->id . $this->trans_atts_id;
         $return = get_transient($trans_id);
         if (false === $return || !$jmayt_options_array['cache']) {//force reset if cache option at 0
-            $return = JMAYtVideo::single_html($this->id, false, $start);
+            $return = JMAYtVideo::single_html($this->id, false);
             set_transient($trans_id, $return, $jmayt_options_array['cache']);
         }
+        return $return;
+    }
+
+
+    protected function error_handler($string)
+    {
+        switch ($string) {//keyInvalid, playlistNotFound, accessNotConfigured or quotaExceeded, ipRefererBlocked, keyExpired, videoNotFound
+            case 'keyInvalid':
+            case 'keyExpired':
+            $explaination = '<p>keyInvalid or keyExpired:<br/>';
+            $explaination .= 'Either the api value is blank or the wrong value has been inserted for the api value see: WordPress Dashboard > Settings > YouTube Playlists with Schema (<a href="' . admin_url('options-general.php?page=jmayt_settings') . '" target="_blank">CLICK HERE</a>)';
+            $explaination .= '</p>';
+                break;
+            case 'accessNotConfigured':
+            case 'quotaExceeded':
+            $explaination = '<p>accessNotConfigured or quotaExceeded:<br/>';
+            $explaination .= 'This generally means that the YouTube Data Api is not enalbed for your Google Project. Try going <a href="https://console.developers.google.com/apis/api/" target="_blank" >here</a> make sure you are in the correct project. Find the api under the Library tab and click "Enable" toward the top of the tab content';
+            $explaination .= '</p>';
+                break;
+            case 'ipRefererBlocked':
+                $explaination = '<p>ipRefererBlocked:<br/>';
+                $explaination .= 'This generally means that the domain for this website is excluded by restrictions set on the api credentials.  Try going <a href="https://console.developers.google.com/apis/api/" target="_blank" >here</a> make sure you are in the correct project. Find the api key under the Credentials tab and click the edit pencil. A common mistake is "*.domain.com/*" the first dot often needs to be removed if the domain is not on a "www" format.';
+                $explaination .= '</p>';
+                break;
+            case 'playlistNotFound':
+            case 'videoNotFound':
+            $explaination = '<p>playlistNotFound or videoNotFound:<br/>';
+            $explaination .= '<strong>Good News! </strong>Your api code is correct either the video id or plylist id is incorrect';
+            $explaination .= '</p>';
+                break;
+            default:
+                $explaination = '<p>Unknown:<br/>';
+                $explaination .= 'Unknown error. Make sure the list or video is public. Check value at: WordPress Dashboard > Settings > YouTube Playlists with Schema. Check settings <a href="https://console.developers.google.com/apis/api/" target="_blank" >here</a>.';
+                $explaination .= '</p>';
+        }
+        $return = '<div class="doink-wrap"><h2>doink</h2>';
+        $return .= '<p>';
+        $return .= 'There are several possible reasons for an error (keyInvalid or keyExpired, accessNotConfigured or quotaExceeded, ipRefererBlocked, playlistNotFound or videoNotFound)';
+        $return .= '</p>';
+        $return .= '<p>';
+        $return .= 'Current error:<strong>' . $string . '</strong>';
+        $return .= '</p>';
+        $return .= '<p>';
+        $return .= $explaination;
+        $return .= '</p>';
+        $return .= '</div>';
+
         return $return;
     }
 }

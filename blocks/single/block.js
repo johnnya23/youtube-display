@@ -18,7 +18,7 @@
         edit: function(props) {
             var attributes = props.attributes
             var alignment = props.attributes.alignment
-            var video_id = props.attributes.video_id
+            var id = props.attributes.id
             var width = props.attributes.width
             var item_font_length = props.attributes.item_font_length
             var start = props.attributes.start
@@ -54,10 +54,10 @@
                         el(TextControl, {
                             type: 'text',
                             label: i18n.__('YouTube Video ID'),
-                            value: video_id,
-                            onChange: function(newvideo_id) {
+                            value: id,
+                            onChange: function(newid) {
                                 props.setAttributes({
-                                    video_id: newvideo_id
+                                    id: newid
                                 })
                             }
                         }),

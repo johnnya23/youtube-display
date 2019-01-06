@@ -41,7 +41,7 @@
      // We also specify the editor script to be used in the Gutenberg interface.
      register_block_type('jmayt-single/block', array(
         'attributes'      => array(
-            'video_id' => array(
+            'id' => array(
                 'type' => 'string',
             ),
             'alignment' => array(

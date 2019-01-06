@@ -18,7 +18,7 @@
         edit: function(props) {
             var attributes = props.attributes
 
-            var yt_list_id = props.attributes.yt_list_id
+            var id = props.attributes.id
             var query_max = props.attributes.query_max
             var query_offset = props.attributes.query_offset
             var item_font_length = props.attributes.item_font_length
@@ -54,10 +54,10 @@
                         el(TextControl, {
                             type: 'text',
                             label: i18n.__('YouTube List ID'),
-                            value: yt_list_id,
-                            onChange: function(newyt_list_id) {
+                            value: id,
+                            onChange: function(newid) {
                                 props.setAttributes({
-                                    yt_list_id: newyt_list_id
+                                    id: newid
                                 })
                             }
                         }),

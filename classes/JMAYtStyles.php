@@ -162,6 +162,15 @@ class JMAYtStyles
     .clearfix:after {
         clear: both
     }
+    body .jmayt-single-item .jmayt-item-wrap {
+        display:block;
+        max-width: 100%;
+    }
+    @media(min-width: 600px){
+    body .jmayt-single-item .jmayt-item-wrap.alignleft, body .jmayt-single-item .jmayt-item-wrap.alignright {
+        max-width: 75%;
+    }
+    }
     .jmayt-video-wrap .jma-responsive-wrap iframe,
     .jmayt-video-wrap .jma-responsive-wrap .jmayt-overlay-button{
     	position: absolute;
