@@ -14,6 +14,8 @@ Blocks or shortcode for embed of responsive single videos and grids from YouTube
 Creates styled grids in WordPress pages/post/sidebars from YouTube Playlists. Also, displays single YouTube videos from video id. All videos displayed through plugin block or shortcode (grids and single) include schema.org metadata markup as recommended by google.
 
 Requires YouTube Data API key &#8211; Instructions for getting the api can be found in the installation tab.
+Block display for WordPress version 5+
+
 Shortcode examples:
 **single videos**
 [yt_video_wrap width=&#8221;100%&#8221; alignment=&#8221;none&#8221;]**url here**[/yt_video_wrap]
