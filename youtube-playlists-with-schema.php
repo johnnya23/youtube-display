@@ -165,7 +165,7 @@ function jmayt_detect_shortcode($needle = '', $post_item = 0)
     if (count($matches[2])) {
         $return = array_intersect($needle, $matches[2]);
     }//next check for blocks
-    elseif (has_blocks($post->post_content)) {
+    elseif (function_exists('has_blocks') && has_blocks($post->post_content)) {
         foreach (parse_blocks($post->post_content) as $block) {
             $blocknames[] = $block['blockName'];
         }
@@ -525,22 +525,21 @@ function jma_yt_grid($atts)
     if (isset($atts['query_offset'])) {
         $offset = $atts['query_offset'];
     }
-
-    ob_start();
     $attributes = array();
     $attributes['id'] = 'jmaty_' . $atts['id'] . $old_css_id;
     $attributes['class'] = 'jmayt-list-wrap clearfix ' . $has_break . ' ';
     if (isset($atts['class'])) {
-        $attributes['class'] .= $atts['class'];
+        $attributes['class'] = str_replace('jmayt-list-wrap', $atts['class'] . ' jmayt-list-wrap', $attributes['class']);
     }
     //pull the grid back out to account for gutters
     $item_gutter_raw = isset($atts['item_gutter'])? $atts['item_gutter']: $jmayt_options_array['item_gutter'];
     $item_gutter = floor($item_gutter_raw/2);
     $attributes['style'] = 'margin-left:-' . $item_gutter . 'px;margin-right:-' . $item_gutter . 'px;';
-    //$attributes['style'] = $style['gutter'];
+
     if (isset($atts['style'])) {
         $attributes['style'] = $atts['style'];
     }
+    ob_start();
     echo '<div ';
     foreach ($attributes as $name => $attribute) {//build opening div ala html shortcode
         if ($attribute) {// check to make sure the attribute exists

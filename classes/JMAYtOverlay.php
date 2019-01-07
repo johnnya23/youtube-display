@@ -27,7 +27,7 @@ class JMAYtOverlay
     {
         $urls = $this->urls;
         if (!is_dir(JMAYT_OVERLAYS_DIR)) {
-            mkdir(JMAYT_OVERLAYS_DIR, '0755');
+            wp_mkdir_p(JMAYT_OVERLAYS_DIR);
         }
         foreach ($urls as $url) {
             $ex = explode('.', basename($url));

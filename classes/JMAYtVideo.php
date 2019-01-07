@@ -128,77 +128,71 @@ class JMAYtVideo
         //the relavent atributes to check for values
         $display_att_list = array( 'item_font_color', 'item_font_size', 'item_font_alignment', 'item_font_length', 'item_bg', 'item_border', 'item_gutter','item_spacing','button_font','button_bg', 'width', 'alignment', 'start' );
         //produce $display_atts with relavent values (if any)
-        $match = false;
         $trans_atts_id = '';
         foreach ($display_att_list as $index) {
             if (isset($atts[$index]) && $atts[$index]) {
                 //update transient id with active index value pairs
                 $trans_atts_id .= $index . $atts[$index];
                 $display_atts[$index] = $atts[$index];
-                $match = true;
             } else {
                 $display_atts[$index] = false;
             }
         }
         //check for values and process producing style strings for each
-        if ($match) {
-            extract($display_atts);
-            $this->trans_atts_id = $trans_atts_id;
-            //number of characters in h3
-            if ($item_font_length) {
-                $this->item_font_length = $item_font_length;
-            }
-            //video start time
-            if ($start) {
-                $this->start = $start;
-            }
-            //box gutter and vertical spacing
-            if ($item_gutter || $item_spacing) {
-                if ($item_gutter) {
-                    $item_gutter = floor($item_gutter/2);
-                    $return['gutter'] = 'margin-left:-' . $item_gutter . 'px;margin-right:-' . $item_gutter . 'px;';
-                }
 
-                $gutter = $item_gutter? 'padding-left:' . $item_gutter . 'px;padding-right:' . $item_gutter . 'px;':'';
-                $spacing = $item_spacing? 'margin-bottom:' . $item_spacing . 'px;':'';
-                $format = ' style="%s%s" ';
-                $col_space = sprintf($format, $spacing, $gutter);
-                $this->col_space = $col_space;
-            }
-            //single width and align and/or list box border and bg
-            $jmayt_item_wrap_align = $box_styles = '';
-            $jmayt_item_wrap = ' class="jmayt-item-wrap"';
-            if ($item_bg || $item_border || $width || $alignment) {
-                if ($alignment) {
-                    $jmayt_item_wrap_align = ' align' . $alignment;
-                }
-                $width = $width? 'width:' . $width . ';': '';
-                $bg = $item_bg? 'background-color:' . $item_bg . ';':'';
-                $border = $item_border? 'border:solid 2px ' . $item_border . '':'';
-                $format = ' style="%s%s%s" ';
-                $box_styles = sprintf($format, $bg, $border, $width);
-            }
-            $jmayt_item_wrap = str_replace('jmayt-item-wrap"', 'jmayt-item-wrap' . $jmayt_item_wrap_align . '"', $jmayt_item_wrap);
-            $this->box_string = $jmayt_item_wrap . $box_styles;
-            //expansion button font color and bg
-            if ($button_font || $button_bg) {
-                $color = $button_font? 'color:' . $button_font . ';':'';
-                $bg = $button_bg? 'background-color:' . $button_bg . ';':'';
-                $format = ' style="%s%s" ';
-                $button_string = sprintf($format, $bg, $color);
-                $this->button_string = $button_string;
-            }
-            //h3 color size and align
-            if ($item_font_color || $item_font_size || $item_font_alignment) {
-                $color = $item_font_color? 'color:' . $item_font_color . ';':'';
-                $size = $item_font_size? 'font-size:' . $item_font_size . 'px;':'';
-                $align = $item_font_alignment? 'text-align:' . $item_font_alignment . ';':'';
-                $format = ' style="%s%s%s" ';
-                $h3_string = sprintf($format, $color, $size, $align);
-                $this->h3_string = $h3_string;
-            }
+        extract($display_atts);
+        $this->trans_atts_id = $trans_atts_id;
+        //number of characters in h3
+        if ($item_font_length) {
+            $this->item_font_length = $item_font_length;
         }
-        //return $return;
+        //video start time
+        if ($start) {
+            $this->start = $start;
+        }
+        //box gutter and vertical spacing
+        if ($item_gutter || $item_spacing) {
+            if ($item_gutter) {
+                $item_gutter = floor($item_gutter/2);
+            }
+            $gutter = $item_gutter? 'padding-left:' . $item_gutter . 'px;padding-right:' . $item_gutter . 'px;':'';
+            $spacing = $item_spacing? 'margin-bottom:' . $item_spacing . 'px;':'';
+            $format = ' style="%s%s" ';
+            $col_space = sprintf($format, $spacing, $gutter);
+            $this->col_space = $col_space;
+        }
+        //single width and align and/or list box border and bg
+        $jmayt_item_wrap_align = $box_styles = '';
+        $jmayt_item_wrap = ' class="jmayt-item-wrap"';
+        if ($item_bg || $item_border || $width || $alignment) {
+            if ($alignment) {
+                $jmayt_item_wrap_align = ' align' . $alignment;
+            }
+            $width = $width? 'width:' . $width . ';': '';
+            $bg = $item_bg? 'background-color:' . $item_bg . ';':'';
+            $border = $item_border? 'border:solid 2px ' . $item_border . '':'';
+            $format = ' style="%s%s%s" ';
+            $box_styles = sprintf($format, $bg, $border, $width);
+        }
+        $jmayt_item_wrap = str_replace('jmayt-item-wrap"', 'jmayt-item-wrap' . $jmayt_item_wrap_align . '"', $jmayt_item_wrap);
+        $this->box_string = $jmayt_item_wrap . $box_styles;
+        //expansion button font color and bg
+        if ($button_font || $button_bg) {
+            $color = $button_font? 'color:' . $button_font . ';':'';
+            $bg = $button_bg? 'background-color:' . $button_bg . ';':'';
+            $format = ' style="%s%s" ';
+            $button_string = sprintf($format, $bg, $color);
+            $this->button_string = $button_string;
+        }
+        //h3 color size and align
+        if ($item_font_color || $item_font_size || $item_font_alignment) {
+            $color = $item_font_color? 'color:' . $item_font_color . ';':'';
+            $size = $item_font_size? 'font-size:' . $item_font_size . 'px;':'';
+            $align = $item_font_alignment? 'text-align:' . $item_font_alignment . ';':'';
+            $format = ' style="%s%s%s" ';
+            $h3_string = sprintf($format, $color, $size, $align);
+            $this->h3_string = $h3_string;
+        }
     }
 
     /*
