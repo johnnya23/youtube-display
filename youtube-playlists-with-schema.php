@@ -113,7 +113,7 @@ add_action('admin_print_footer_scripts', 'jmayt_quicktags');
 function jmayt_scripts()
 {
     wp_enqueue_style('jmayt_bootstrap_css', JMAYT_CSS_URL . '/jmayt_bootstrap.min.css');
-    wp_enqueue_script('jmayt_api', 'https://www.youtube.com/player_api', array( 'jquery' ));
+    wp_enqueue_script('jmayt_api', 'https://www.youtube.com/iframe_api', array( 'jquery' ));
     wp_enqueue_script('jmayt_js', JMAYT_JS_URL . '/jmayt_js.min.js', array( 'jquery', 'jmayt_api' ));
     global $jmayt_options_array;
     $custom_css = JMAYtStyles::styles($jmayt_options_array);
@@ -540,6 +540,7 @@ function jma_yt_grid($atts)
         $attributes['style'] = $atts['style'];
     }
     ob_start();
+    echo '<div class="jmayt-list-outer-wrap">';
     echo '<div ';
     foreach ($attributes as $name => $attribute) {//build opening div ala html shortcode
         if ($attribute) {// check to make sure the attribute exists
@@ -549,6 +550,7 @@ function jma_yt_grid($atts)
     echo '>';
     echo $you_tube_list->list_markup($responsive_cols, $offset, $max);
     echo '</div>';//yt-list-wrap
+    echo '</div>';//yt-list-outer-wrap
     $x = ob_get_contents();
     ob_end_clean();
 

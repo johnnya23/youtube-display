@@ -261,7 +261,7 @@ class JMAYtVideo
             $return .= '<div' . $this->box_string . '>';
             $return .= '<div class="jmayt-item">';
             $return .= '<div class="jmayt-video-wrap">';
-            $return .= '<div class="jma-responsive-wrap" itemprop="video" itemscope itemtype="http://schema.org/VideoObject">';
+            $return .= '<div class="jma-responsive-wrap" itemprop="video" itemscope itemtype="https://schema.org/VideoObject">';
             $return .= '<button class="jmayt-btn jmayt-sm" ' . $this->button_string . '>&#xe140;</button>';
             $return .= JMAYtVideo::jma_youtube_schema_html($meta_array);
             if (!$jmayt_options_array['cache_images']) {// single video or image caching off

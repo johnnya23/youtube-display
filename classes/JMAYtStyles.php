@@ -176,7 +176,7 @@ class JMAYtStyles
     	position: absolute;
     	top: 0;
     	left: 0;
-    	width: 100%;
+    	width: 100%!important;
     	height: 100%;
     }
     .jmayt-video-wrap .jma-responsive-wrap .jmayt-overlay-button {
@@ -261,6 +261,9 @@ class JMAYtStyles
     }
     .jmayt-list-wrap .xs-break {
         clear: both
+    }
+    button.jmayt-btn:focus,button.jmayt-btn:hover{
+        text-decoration:none!important
     }
     @media(max-width: 767px){
         button.jmayt-btn, button.jmayt-btn:focus {

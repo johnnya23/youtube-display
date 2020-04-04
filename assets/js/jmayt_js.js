@@ -168,7 +168,7 @@ JmaytUtils.prototype = {
 var JmaytUtils = new JmaytUtils();
 
 
-function onYouTubePlayerAPIReady() {
+function onYouTubeIframeAPIReady() {
     jQuery('body').addClass('jmayt_loaded');
     jQuery('.jmayt-overlay-button').each(function() {
         $overlayButton = jQuery(this);
@@ -186,6 +186,7 @@ function jmayt_setup_video($button) {
         videoId: $button_id,
         playerVars: {
             rel: 0,
+            origin: document.domain,
             enablejsapi: 1,
             start: $start
         },
@@ -197,9 +198,8 @@ function jmayt_setup_video($button) {
 }
 
 function jmayt_onPlayerReady(event) {
-
     // bind events
-    $iframe = event.target.a;
+    $iframe = event.target.f;
     var $playButton = jQuery($iframe).parents('.jma-responsive-wrap').find('.jmayt-overlay-button');
     $playButton.addClass('jmayt-ready');
     $playButton.bind("click", function() {
@@ -213,7 +213,7 @@ function jmayt_onPlayerReady(event) {
 jQuery(window).scroll(function() {
     hold_fixed();
     if (jQuery('body').hasClass('jmayt_loaded'))
-        onYouTubePlayerAPIReady();
+        onYouTubeIframeAPIReady();
     if (jQuery('body').hasClass('wp-admin')) {
         jmayt_title_resize();
     }
@@ -229,7 +229,7 @@ jQuery(window).load(function() {
     if (jQuery('body').hasClass('wp-admin')) {
         jmayt_title_resize();
     } else {
-        onYouTubePlayerAPIReady();
+        onYouTubeIframeAPIReady();
     }
 });
 
