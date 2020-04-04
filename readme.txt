@@ -2,8 +2,8 @@
 Contributors: johnnya23
 Tags: youtube, schema, youtube gallery, youtube playlist, youtube embed, youtube seo, youtube channel, responsive youtube
 Requires at least: 4.0
-Tested up to: 5.0.2
-Stable tag: 2.0
+Tested up to: 5.4
+Stable tag: 2.3.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -192,3 +192,8 @@ https://bgrins.github.io/spectrum/
 * replace colorpicker
 * display single videos with overlays
 * reorganize files
+
+= 2.3 =
+* change to iframe api
+* add outer div for compatibility
+* fix cached image functionality
