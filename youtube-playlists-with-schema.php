@@ -3,7 +3,7 @@
 Plugin Name: Responsive YouTube Videos and Playlists with Schema
 Plugin URI: https://cleansupersites.com/jma-youtube-playlists-with-schema/
 Description: Adds Blocks and makes available shortcode for embed of single videos and grids from YouTube video playlists, which include schema.org markup as recommended by google.
-Version: 2.3.0
+Version: 2.4.0
 Author: John Antonacci
 Author URI: http://cleansupersites.com
 License: GPL2
@@ -115,8 +115,7 @@ add_action('admin_print_footer_scripts', 'jmayt_quicktags');
 function jmayt_scripts()
 {
     wp_enqueue_style('jmayt_bootstrap_css', JMAYT_CSS_URL . '/jmayt_bootstrap.min.css');
-    wp_enqueue_script('jmayt_api', 'https://www.youtube.com/iframe_api', array( 'jquery' ));
-    wp_enqueue_script('jmayt_js', JMAYT_JS_URL . '/jmayt_js.min.js', array( 'jquery', 'jmayt_api' ));
+    wp_enqueue_script('jmayt_js', JMAYT_JS_URL . '/jmayt_js.min.js', array( 'jquery' ));
     global $jmayt_options_array;
     $custom_css = JMAYtStyles::styles($jmayt_options_array);
     wp_add_inline_style('jmayt_bootstrap_css', $custom_css);
@@ -142,12 +141,12 @@ add_action('template_redirect', 'jmayt_template_redirect');
 /**
  * function jmayt_detect_shortcode Detect shortcodes in a post object,
  *  from a post id or from global $post.
- * @param string or array $needle - the shortcode(s) and block(s) to search for
+ * @param string or array $needles - the shortcode(s) and block(s) to search for
  * use array for multiple values
  * @param int or object $post_item - the post to search (defaults to current)
  * @return boolean $return
  */
-function jmayt_detect_shortcode($needle = '', $post_item = 0)
+function jmayt_detect_shortcode($needles = '', $post_item = 0)
 {
     if ($post_item) {
         if (is_object($post_item)) {
@@ -165,15 +164,16 @@ function jmayt_detect_shortcode($needle = '', $post_item = 0)
 
     //if shortcode(s) to be searched for were passed and not found $return false
     if (count($matches[2])) {
-        $return = array_intersect($needle, $matches[2]);
+        $return = array_intersect($needles, $matches[2]);
     }//next check for blocks
-    elseif (function_exists('has_blocks') && has_blocks($post->post_content)) {
-        foreach (parse_blocks($post->post_content) as $block) {
-            $blocknames[] = $block['blockName'];
+    if (function_exists('has_blocks') && has_blocks($post->post_content)) {
+        foreach ($needles as $needle) {
+            if (has_block($needle)) {
+                $return = true;
+            }
         }
-        $return = array_intersect($needle, $blocknames);
     }
-    return apply_filters('jmayt_detect_shortcode_result', $return, $post, $needle);
+    return apply_filters('jmayt_detect_shortcode_result', $return, $needles, $post);
 }
 
 $jmayt_db_option = 'jmayt_options_array';
@@ -444,7 +444,7 @@ if (is_admin()) {
             'title' => 'YouTube Playlists with Schema',
             'db_option' => $jmayt_db_option,
             'settings' => $settings)
-        );
+    );
 }
 
 //for block/ shortcode functions below

@@ -24,7 +24,9 @@ class JMAYtList extends JMAYtVideo
             $curl_array = JMAYtList::curl($youtube_array);
             $next =isset($curl_array['nextPageToken'])? '&pageToken=' . $curl_array['nextPageToken']:'';
             if ($curl_array) {
-                $return = array_merge($return, $curl_array['items']);
+                if (is_array($curl_array)) {
+                    $return = array_merge($return, $curl_array['items']);
+                }
             }
         } while ($next && $max > 0);
 
@@ -63,7 +65,10 @@ class JMAYtList extends JMAYtVideo
             }
 
             $yt_loop_items = $yt_api_array;
-            $count = count($yt_loop_items);
+            $count = 0;
+            if (is_array($yt_loop_items)) {
+                $count = count($yt_loop_items);
+            }
             $i = 0;
             if ($count > 0) {
                 foreach ($res_cols as $break => $res_col) {

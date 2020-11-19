@@ -12,105 +12,105 @@ function jmayt_title_resize() {
 function jmayt_toggle() {
     //create the toggle lightbox effect for the youtube items
 
-    //apply the toggle effect to the area around the video
-    //when it is expanded
-    jQuery('.jmayt-video-wrap').click(function() {
-        if (jQuery(this).hasClass('jmayt-fixed'))
-            jmayt_hide_lightbox();
-    }).children().click(function(e) {
-        return false;
-    });
+    jQuery('.jmayt-item').each(function() {
+        $this = jQuery(this);
+        //apply the toggle effect to the area around the video
+        //when it is expanded
+        $this.find('.jmayt-video-wrap').on('click', function() {
+            if (jQuery(this).hasClass('jmayt-fixed'))
+                jmayt_handle_lightbox(jQuery(this));
+        }).children().on('click', function(e) {
+            return false;
+        });
 
-    jQuery('.jmayt-btn').each(function() {
-        jQuery(this).toggle(jmayt_show_lightbox, jmayt_hide_lightbox);
-    });
 
-    function jmayt_show_lightbox() {
-        if (jQuery(this).is('button')) //keep $this if toggle is backwards (see 'else' below)
-            $this = jQuery(this);
-        $fixed = $this.parents('.jmayt-video-wrap');
-        if (!$fixed.hasClass('jmayt-fixed')) { //make sure toggle is not backwards
-            //distance the user has scrolled down the window (dynamic)
-            $scroll = jQuery(document).scrollTop();
-            //get rid of scroll
-            $parent = $this.parents('.jmayt-item');
-            parent_width = $parent.innerWidth();
-            $button = $this;
-            $z_index = $fixed.parents('.jmayt-outer').parents().add($fixed);
-            $parent.css('min-height', $parent.height() + 'px');
-            $this.html('&#xe097;');
-            //bring this section of the page to the top
+        $this.find('.jmayt-btn').on('click', function() {
+            jmayt_handle_lightbox(jQuery(this));
+        });
+    });
+}
+
+function jmayt_handle_lightbox($button) {
+    if (!$button.is('button'))
+        $button = $button.find('.jmayt-btn');
+
+    $jmayt_item = $button.closest('.jmayt-item');
+    jmayt_item_width = $jmayt_item.innerWidth();
+    $jmayt_video_wrap = $jmayt_item.find('.jmayt-video-wrap'); //adjust class jmayt-fixed
+    $z_index = $jmayt_video_wrap.parents('.jmayt-outer').parents().add($jmayt_video_wrap);
+    $video_win = $jmayt_item.find('.jma-responsive-wrap');
+    //open the lightbox
+    if (!$jmayt_video_wrap.hasClass('jmayt-fixed')) {
+
+        //distance the user has scrolled down the window (dynamic)
+        $scroll = jQuery(document).scrollTop();
+        //get rid of scroll
+
+        $jmayt_item.css('min-height', $jmayt_item.height() + 'px');
+        $button.html('&#xe097;');
+        //bring this section of the page to the top
+        $z_index.css({
+            'z-index': '2147483647',
+            'overflow': 'visible'
+        });
+        jQuery('body').css({
+            'overflow-y': 'hidden'
+        });
+        //first we make it absolute and give it a size
+        $jmayt_video_wrap.addClass('jmayt-fixed');
+        //x and y coordinates of the div (static)
+        $pos = $jmayt_item.offset();
+        $pos_top = $pos.top;
+        $pos_left = $pos.left;
+        $jmayt_video_wrap.css({
+            'width': (jmayt_item_width) + 'px',
+            'height': (jmayt_item_width) / 1.7778 + 'px',
+            'padding-bottom': 0
+        }).animate({ //then we increase it's size while positioning it at the top left of the window
+            'top': -($pos_top - $scroll) + 'px',
+            'left': -$pos_left + 'px',
+            'width': jQuery(window).width() + 'px',
+            'height': window.innerHeight + 'px'
+        });
+        $ratio = 9 / 16;
+
+        $window = jQuery(window);
+        if (($window.height() / $window.width()) < $ratio) {
+            $video_win.css({
+                'width': ((($window.height() / $window.width()) / $ratio) * 100) + '%',
+                'padding-bottom': (($window.height() / $window.width()) * 100) + '%'
+            });
+        }
+    } else //close the lightbox
+    {
+        $button.html('&#xe140;');
+        $jmayt_video_wrap.animate({
+            'top': 0,
+            'left': 0,
+            'width': (jmayt_item_width) + 'px',
+            'height': (jmayt_item_width) / 1.7778 + 'px'
+        }, 300, 'swing', function() {
+            $jmayt_video_wrap.removeClass('jmayt-fixed');
+            $jmayt_video_wrap.css({
+                'top': '',
+                'left': '',
+                'height': '',
+                'width': '',
+                'padding-bottom': ''
+            });
             $z_index.css({
-                'z-index': '2147483647',
-                'overflow': 'visible'
+                'z-index': '',
+                'overflow': ''
             });
-            jQuery('body').css({
-                'overflow-y': 'hidden'
+            $video_win.css({
+                'width': '',
+                'padding-bottom': ''
             });
-            //first we make it absolute and give it a size
-            $fixed.addClass('jmayt-fixed');
-            //x and y coordinates of the div (static)
-            $pos = $parent.offset();
-            $pos_top = $pos.top;
-            $pos_left = $pos.left;
-            $fixed.css({
-                'width': (parent_width) + 'px',
-                'height': (parent_width) / 1.7778 + 'px',
-                'padding-bottom': 0
-            }).animate({ //then we increase it's size while positioning it at the top left of the window
-                'top': -($pos_top - $scroll) + 'px',
-                'left': -$pos_left + 'px',
-                'width': jQuery(window).width() + 'px',
-                'height': window.innerHeight + 'px'
-            });
-            $ratio = 9 / 16;
-            $video_win = $this.parents('.jma-responsive-wrap');
-            $window = jQuery(window);
-            if (($window.height() / $window.width()) < $ratio) {
-                $video_win.css({
-                    'width': ((($window.height() / $window.width()) / $ratio) * 100) + '%',
-                    'padding-bottom': (($window.height() / $window.width()) * 100) + '%'
-                });
-            }
-        } else { //adjust if toggle is backwards
-            jmayt_hide_lightbox();
-        }
-    }
+        });
 
-    function jmayt_hide_lightbox() {
-        if ($fixed.hasClass('jmayt-fixed')) { //adjust if toggle is backwards (BELOW)
-            $this.html('&#xe140;');
-            $fixed.animate({
-                'top': 0,
-                'left': 0,
-                'width': (parent_width) + 'px',
-                'height': (parent_width) / 1.7778 + 'px'
-            }, 300, 'swing', function() {
-                $fixed.removeClass('jmayt-fixed');
-                $fixed.css({
-                    'top': '',
-                    'left': '',
-                    'height': '',
-                    'width': '',
-                    'padding-bottom': ''
-                });
-                $z_index.css({
-                    'z-index': '',
-                    'overflow': ''
-                });
-                $video_win.css({
-                    'width': '',
-                    'padding-bottom': ''
-                });
-            });
-
-            jQuery('body').css({
-                'overflow-y': ''
-            });
-        } else {
-            $this = jQuery(this); //redefine $this if toggle is backwards
-            jmayt_show_lightbox();
-        }
+        jQuery('body').css({
+            'overflow-y': ''
+        });
     }
     //for width change and orientation change on mobile
 }
@@ -118,22 +118,22 @@ function jmayt_toggle() {
 function hold_fixed() {
     //using the class that is added on show_lightbox
     jQuery('.jmayt-fixed').each(function() {
-        $fixed_el = jQuery(this);
+        $jmayt_video_wrap_el = jQuery(this);
         //distance the use has scrolled down the window (dynamic)
         $scroll = jQuery(document).scrollTop();
-        $parent = $fixed_el.closest('.jmayt-item');
+        $jmayt_item = $jmayt_video_wrap_el.closest('.jmayt-item');
         //x and y coordinates of the div (static)
-        $pos = $parent.offset();
+        $pos = $jmayt_item.offset();
         $pos_top = $pos.top;
         $pos_left = $pos.left;
-        $fixed_el.css({
+        $jmayt_video_wrap_el.css({
             'top': -($pos_top - $scroll) + 'px',
             'left': -$pos_left + 'px',
             'width': jQuery(window).width() + 'px',
             'height': window.innerHeight + 'px'
         });
         $ratio = 9 / 16;
-        $video_win = $fixed_el.find('.jma-responsive-wrap');
+        $video_win = $jmayt_video_wrap_el.find('.jma-responsive-wrap');
         $window = jQuery(window);
         if (($window.height() / $window.width()) < $ratio) { //for short window reduce wrap width
             $video_win.css({
@@ -143,6 +143,23 @@ function hold_fixed() {
         }
     });
 }
+
+var tag = document.createElement('script');
+
+tag.src = "https://www.youtube.com/iframe_api";
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+
+var checkYT = setInterval(function() {
+    if (YT.loaded) {
+        jmayt_setup_onscreen();
+
+        clearInterval(checkYT);
+    }
+}, 100);
+
+
 /* load video when it scrolls into screen */
 
 function JmaytUtils() {
@@ -167,9 +184,7 @@ JmaytUtils.prototype = {
 
 var JmaytUtils = new JmaytUtils();
 
-
-function onYouTubeIframeAPIReady() {
-    jQuery('body').addClass('jmayt_loaded');
+function jmayt_setup_onscreen() {
     jQuery('.jmayt-overlay-button').each(function() {
         $overlayButton = jQuery(this);
         if (JmaytUtils.isElementInView($overlayButton, false) && !$overlayButton.next().is('iframe')) {
@@ -210,10 +225,9 @@ function jmayt_onPlayerReady(event) {
 }
 
 
-jQuery(window).scroll(function() {
+jQuery(window).on('scroll', function() {
     hold_fixed();
-    if (jQuery('body').hasClass('jmayt_loaded'))
-        onYouTubeIframeAPIReady();
+    jmayt_setup_onscreen();
     if (jQuery('body').hasClass('wp-admin')) {
         jmayt_title_resize();
     }
@@ -221,19 +235,17 @@ jQuery(window).scroll(function() {
 
 jQuery(document).ready(function() {
     jmayt_title_resize();
-});
 
-jQuery(window).load(function() {
-    jmayt_toggle();
-    //only in the edit screen
-    if (jQuery('body').hasClass('wp-admin')) {
+    jQuery(window).on('load', function() {
+        jmayt_toggle();
+        //only in the edit screen
+        if (jQuery('body').hasClass('wp-admin')) {
+            jmayt_title_resize();
+        }
+    });
+
+    jQuery(window).on('resize', function() {
+        hold_fixed();
         jmayt_title_resize();
-    } else {
-        onYouTubeIframeAPIReady();
-    }
-});
-
-jQuery(window).resize(function() {
-    hold_fixed();
-    jmayt_title_resize();
+    });
 });
