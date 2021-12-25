@@ -19,11 +19,6 @@ if (! defined('ABSPATH')) {
  */
 // Plugin version.
 
-if (! defined('JMAYT_VERSION')) {
-    $plugin_data = get_plugin_data(__FILE__);
-    define('JMAYT_VERSION', $plugin_data['Version']);
-}
-
 if (! defined('JMAYT_NAME')) {
     define('JMAYT_NAME', trim(dirname(plugin_basename(__FILE__)), '/'));
 }
