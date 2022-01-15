@@ -152,7 +152,7 @@ firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 
 var checkYT = setInterval(function() {
-    if (YT.loaded) {
+    if (typeof YT !== 'undefined') {
         jmayt_setup_onscreen();
 
         clearInterval(checkYT);
@@ -197,25 +197,31 @@ function jmayt_setup_video($button) {
     // create the global player from the specific iframe (#video) jmayt-overlay-button
     $button_id = $button.data('embedid');
     $start = $button.data('start');
-    $player = new YT.Player('video' + $button_id, {
-        videoId: $button_id,
-        playerVars: {
-            rel: 0,
-            origin: document.domain,
-            enablejsapi: 1,
-            start: $start
-        },
-        events: {
-            // call this function when player is ready to use
-            'onReady': jmayt_onPlayerReady
-        }
-    });
+    if (typeof YT !== 'undefined') {
+        window.YT.ready(function() {
+            $player = new YT.Player('video' + $button_id, {
+                videoId: $button_id,
+                playerVars: {
+                    rel: 0,
+                    origin: document.domain,
+                    enablejsapi: 1,
+                    start: $start
+                },
+                events: {
+                    // call this function when player is ready to use
+                    'onReady': jmayt_onPlayerReady
+                }
+            });
+        });
+    }
 }
 
 function jmayt_onPlayerReady(event) {
     // bind events
-    $iframe = event.target.f;
-    var $playButton = jQuery($iframe).parents('.jma-responsive-wrap').find('.jmayt-overlay-button');
+
+
+    data = event.target.getVideoData();
+    var $playButton = jQuery('#video' + data.video_id).parents('.jma-responsive-wrap').find('.jmayt-overlay-button');
     $playButton.addClass('jmayt-ready');
     $playButton.bind("click", function() {
         jQuery(this).css('display', 'none');
