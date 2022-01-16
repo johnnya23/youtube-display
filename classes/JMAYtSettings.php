@@ -160,7 +160,7 @@ class JMAYtSettings
         $option_array_name = $field['id'];
         $option_name = $this->db_option . '[' . $field['id'] . ']';
         $option_array = get_option($this->db_option);
-        if (is_array($option_array)) {
+        if (is_array($option_array) && isset($option_array[$option_array_name])) {
             $option = $option_array[$option_array_name];
         }
 

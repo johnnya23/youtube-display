@@ -205,7 +205,7 @@ function jmayt_clear_cache()
     if ($jmayt_options_array['cache_images']) {
         jmayt_on_activation_wc();
     } else {
-        $files = glob(realpath(plugin_dir_path(__FILE__)) . DIRECTORY_SEPARATOR . 'overlays' . DIRECTORY_SEPARATOR . '*', GLOB_NOCHECK | GLOB_MARK); // get all file names
+        $files = glob(JMAYT_OVERLAYS_DIR . DIRECTORY_SEPARATOR . '*', GLOB_NOCHECK | GLOB_MARK); // get all file names
         foreach ($files as $file) { // iterate files
             if (is_file($file)) {
                 unlink($file);
@@ -219,7 +219,7 @@ add_action('update_option_' . $jmayt_db_option, 'jmayt_clear_cache');
 function jmayt_clear_images_function()
 {
     global $wpdb;
-    $files = glob(realpath(plugin_dir_path(__FILE__)) . DIRECTORY_SEPARATOR . 'overlays' . DIRECTORY_SEPARATOR . '*'); // get all file names
+    $files = glob(JMAYT_OVERLAYS_DIR . DIRECTORY_SEPARATOR . '*'); // get all file names
     foreach ($files as $file) { // iterate files
         if (is_file($file)) {
             unlink($file);
@@ -284,10 +284,10 @@ $settings = array(
             ),
             array(
                 'id' 			=> 'cache_images',
-                'label'			=> __('Cache Images', 'jmayt_textdomain'),
+                'label'			=> __('Overlay Images', 'jmayt_textdomain'),
                 'description'	=> __('<span style="color:red">This option pulls thumbnail images from YouTube and stores them in the plugin for faster display of long lists. ACTIVATING THIS OPTION CAUSES THE PLUGIN TO TRY TO REWRITE .HTACCESS TO INCREASE MAX PAGE EXECUTION TIME TO 5 MINUTES. The first time a page with a large list loads the plugin will copy the YouTube thumbnail images dynamically. This means the first page load will be very slow. Thereafter the page will load thumbnails from the plugin folder (much faster). THIS OPTION MAY NOT WORK CORRECTLY DEPENDING ON YOUR HOSTING ENVIRONMENT (you can always switch back to conventional loading)</span>', 'jmayt_textdomain'),
                 'type'			=> 'radio',
-                'options'		=> array( 0 => 'Don\'t cache', 1 => 'Cache images'),
+                'options'		=> array( 0 => 'Don\'t use overlays', 1 => 'Use overlays'),
                 'default'		=> 0
             ),
             array(
