@@ -117,6 +117,11 @@ function jmayt_scripts()
 }
 add_action('enqueue_block_editor_assets', 'jmayt_scripts');
 
+function jmayt_body_class($classes)
+{
+    $classes[] = 'jmayt-is-admin';
+    return $classes;
+}
 function jmayt_template_redirect()
 {
     global $jmayt_options_array;
@@ -128,6 +133,9 @@ function jmayt_template_redirect()
         if ($jmayt_options_array['cache'] && !is_dir(JMAYT_OVERLAYS_DIR)) {
             jmayt_clear_cache();
         }
+    }
+    if (current_user_can('administrator')) {
+        add_filter('body_class', 'jmayt_body_class');
     }
 }
 add_action('template_redirect', 'jmayt_template_redirect');

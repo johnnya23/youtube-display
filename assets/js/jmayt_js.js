@@ -244,6 +244,7 @@ jQuery(document).ready(function() {
 
     jQuery(window).on('load', function() {
         jmayt_toggle();
+        jmayt_setup_onscreen();
         //only in the edit screen
         if (jQuery('body').hasClass('wp-admin')) {
             jmayt_title_resize();

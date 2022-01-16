@@ -27,6 +27,9 @@ class JMAYtList extends JMAYtVideo
                 if (is_array($curl_array)) {
                     $return = array_merge($return, $curl_array['items']);
                 }
+                if (!count($return) && !is_array($curl_array)) {
+                    $return = $curl_array;
+                }
             }
         } while ($next && $max > 0);
 
@@ -60,7 +63,7 @@ class JMAYtList extends JMAYtVideo
             $yt_api_array = JMAYtList::yt_loop($this->id, $offset, $max);
 
             //kick errors to error handler here
-            if (is_string($yt_api_array)) {
+            if (!is_array($yt_api_array)) {
                 return JMAYtVideo::error_handler($yt_api_array);
             }
 

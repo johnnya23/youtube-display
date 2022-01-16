@@ -2,8 +2,8 @@
 Contributors: johnnya23
 Tags: youtube, schema, youtube gallery, youtube playlist, youtube embed, youtube seo, youtube channel, responsive youtube
 Requires at least: 4.0
-Tested up to: 5.5.3
-Stable tag: 2.4.0
+Tested up to: 5.8.3
+Stable tag: 2.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -201,3 +201,7 @@ https://bgrins.github.io/spectrum/
 = 2.4 =
 * update and broadin iframe api
 * update jQuery to 3.x
+
+= 2.4.1 =
+* finally fix cached image functionality
+* show errors to admin only
