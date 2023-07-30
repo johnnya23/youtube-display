@@ -2,18 +2,20 @@
 Contributors: johnnya23
 Tags: youtube, schema, youtube gallery, youtube playlist, youtube embed, youtube seo, youtube channel, responsive youtube
 Requires at least: 4.0
-Tested up to: 4.9.6
-Stable tag: 1.3.2
+Tested up to: 5.8.3
+Stable tag: 2.4.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Shortcode for embed of responsive single videos and grids from YouTube video playlists, which include schema.org markup as recommended by google.
+Blocks or shortcode for embed of responsive single videos and grids from YouTube video playlists, which include schema.org markup as recommended by google.
 
 == Description ==
 
-Creates styled grids in WordPress pages/post/sidebars from YouTube Playlists. Also, displays single YouTube videos from video id. All videos displayed through plugin shortcode (grids and single) include schema.org metadata markup as recommended by google.
+Creates styled grids in WordPress pages/post/sidebars from YouTube Playlists. Also, displays single YouTube videos from video id. All videos displayed through plugin block or shortcode (grids and single) include schema.org metadata markup as recommended by google.
 
 Requires YouTube Data API key &#8211; Instructions for getting the api can be found in the installation tab.
+Block display for WordPress version 5+
+
 Shortcode examples:
 **single videos**
 [yt_video_wrap width=&#8221;100%&#8221; alignment=&#8221;none&#8221;]**url here**[/yt_video_wrap]
@@ -83,6 +85,10 @@ In any case you can click &#8216;Credentials&#8217; in the sidebar to see your k
 Note &#8211; You can use this &#8216;project&#8217; on other sites. Just come back to this page (you may want to bookmark) make sure you are in the correct project go directly to credentials and create another api key by clicking the big &#8216;create credentials &#8216; button and choosing &#8216;api key&#8217; (top option). The new key will do the same thing and have a separate usage allocation.
 
 == Frequently Asked Questions ==
+
+= Does this update support blocks? =
+
+Yes, in the common category "List YouTube Responsive Videos" or "Single YouTube Responsive Video"
 
 = What schema values does the plugin provide? =
 
@@ -179,3 +185,23 @@ https://bgrins.github.io/spectrum/
 
 = 1.3.2 =
 * add publisher and logo and interaction count and duration to schema
+
+= 2.0 =
+* improve Schema
+* add content blocks for single videos and lists
+* replace colorpicker
+* display single videos with overlays
+* reorganize files
+
+= 2.3 =
+* change to iframe api
+* add outer div for compatibility
+* fix cached image functionality
+
+= 2.4 =
+* update and broadin iframe api
+* update jQuery to 3.x
+
+= 2.4.1 =
+* finally fix cached image functionality
+* show errors to admin only

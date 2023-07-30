@@ -72,14 +72,15 @@ class JMAYtSettings
      */
     public function settings_assets()
     {
-        wp_enqueue_style('spectrum_style', plugin_dir_url(__FILE__) . '/spectrum.css');
-        wp_enqueue_script('spectrum_script', plugin_dir_url(__FILE__) . '/spectrum.js');
+        wp_enqueue_style('minicolors_style', JMAYT_ADMIN_URL . '/minicolors.min.css');
+
+        // INITIALIZED MINICOLRS AT THE END OF THIS FILE TO SAVE A FILE CALL
+        wp_enqueue_script('minicolors_script', JMAYT_ADMIN_URL . '/minicolors.min.js');
 
         // We're including the WP media scripts here because they're needed for the image upload field
         // If you're not including an image upload then you can leave this function call out
-        wp_enqueue_media();
+        // wp_enqueue_media();
 
-        wp_register_script($this->settings_base . 'admin-js', $this->assets_url . 'settings.js', array( 'spectrum_script', 'jquery' ), '1.0.0');
         wp_enqueue_script($this->settings_base . 'admin-js');
     }
 
@@ -159,7 +160,7 @@ class JMAYtSettings
         $option_array_name = $field['id'];
         $option_name = $this->db_option . '[' . $field['id'] . ']';
         $option_array = get_option($this->db_option);
-        if (is_array($option_array)) {
+        if (is_array($option_array) && isset($option_array[$option_array_name])) {
             $option = $option_array[$option_array_name];
         }
 
@@ -177,6 +178,7 @@ class JMAYtSettings
             case 'password':
             case 'number':
                 $style = esc_attr($field['id']) == 'api'? ' style="width: 350px; max-width: 100%" ': '';
+                $data = esc_attr($field['id']) == 'cache' && $data < 60? 60: $data;
                 $html .= '<input id="' . esc_attr($field['id']) . '"' . $style . 'type="' . $field['type'] . '" name="' . esc_attr($option_name) . '" placeholder="' . esc_attr($placeholder) . '" value="' . $data . '"/>' . "\n";
                 break;
             case 'submit':/* THIS IS JUST HARDCODED TO ENABLE BUTTON PLACEMENT WITHIN FORM */
@@ -256,10 +258,9 @@ form="jmaty_clear"  /></p>';
                 break;
 
             case 'color':
-                ?><div class="color-picker" style="position:relative;">
-                <input type="text" name="<?php esc_attr_e($option_name); ?>" class="spectrum-picker" value="<?php echo esc_html($data) ?>" />
-                </div>
-                <?php
+                $html .= '<div class="color-picker" style="position:relative;">';
+                $html .= '<input type="text" name=" ' . esc_attr__($option_name) . ' " class="mini-picker" value="' . esc_html($data) . '" />';
+                $html .= '</div>';
                 break;
 
         }
@@ -304,7 +305,7 @@ form="jmaty_clear"  /></p>';
         $html = '<div class="wrap" id="' . $this->settings_base . 'settings">' . "\n";
         $html .= '<h2>' . __($this->page_title . ' Settings', $this->text_domain) . '</h2>' . "\n";
         $html .= '<form id="jmaty_clear" action="' . admin_url("admin-post.php") . '">';
-        $html .= '<input type="hidden" name="action" value="jmayt_clear_function">';
+        $html .= '<input type="hidden" name="action" value="jmayt_clear_images_function">';
         $html .= '</form>';
 
         $html .= '<form method="post" action="options.php" enctype="multipart/form-data">' . "\n";
