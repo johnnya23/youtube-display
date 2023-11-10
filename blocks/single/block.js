@@ -14,7 +14,7 @@
         description: i18n.__('A custom block for displaying responsive YouTube videos.'), // The description of our block.
         icon: 'video-alt3', // Dashicon icon for our block. Custom icons can be added using inline SVGs.
         category: 'common', // The category of the block.
-
+        keywords: ["youtube", "video", "responsive", "list", "grid"],
         edit: function(props) {
             var attributes = props.attributes
             var alignment = props.attributes.alignment
@@ -22,7 +22,7 @@
             var width = props.attributes.width
             var item_font_length = props.attributes.item_font_length
             var start = props.attributes.start
-            var ServerSideRender = wp.components.ServerSideRender
+            var ServerSideRender = wp.serverSideRender
 
             function onChangeAlignment(newAlignment) {
                 props.setAttributes({
@@ -53,7 +53,7 @@
                         // Video id text field option.
                         el(TextControl, {
                             type: 'text',
-                            label: i18n.__('YouTube Video ID'),
+                            label: i18n.__('YouTube Video ID (or URL)'),
                             value: id,
                             onChange: function(newid) {
                                 props.setAttributes({
@@ -99,14 +99,14 @@
 
                     )
                 ),
-                el(ServerSideRender, {
+               el(ServerSideRender, {
                     block: 'jmayt-single/block',
                     attributes: props.attributes,
                 })
             ]
         },
 
-        save: function() {
+        save: function(props) {
             return null;
         },
     })
