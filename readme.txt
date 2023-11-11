@@ -3,7 +3,7 @@ Contributors: johnnya23
 Tags: youtube, schema, youtube gallery, youtube playlist, youtube embed, youtube seo, youtube channel, responsive youtube
 Requires at least: 4.0
 Tested up to: 6.4
-Stable tag: 2.6
+Stable tag: 2.6.1
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
@@ -215,4 +215,6 @@ https://bgrins.github.io/spectrum/
 * serverside render fixed
 * strip quotes from shortcode
 * php function attributes
+= 2.6.1 =
+* show doink in editor
 

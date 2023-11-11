@@ -3,7 +3,7 @@
 Plugin Name: Responsive YouTube Videos and Playlists with Schema
 Plugin URI: https://cleansupersites.com/jma-youtube-playlists-with-schema/
 Description: Adds Blocks and makes available shortcode for embed of single videos and grids from YouTube video playlists, which include schema.org markup as recommended by google.
-Version: 2.6
+Version: 2.6.1
 Author: John Antonacci
 Author URI: http://cleansupersites.com
 License: GPL2
@@ -149,7 +149,7 @@ add_action('template_redirect', 'jmayt_template_redirect');
  * @param int or object $post_item - the post to search (defaults to current)
  * @return boolean $return
  */
-function jmayt_detect_shortcode($needles = '', $post_item = 0)
+function jmayt_detect_shortcode($needles = array(), $post_item = 0)
 {
     if ($post_item) {
         if (is_object($post_item)) {

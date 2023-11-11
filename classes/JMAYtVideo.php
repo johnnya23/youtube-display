@@ -24,8 +24,8 @@ class JMAYtVideo
 
         $whitelist = array('127.0.0.1', "::1");
         if ($jmayt_options_array['dev'] && in_array($_SERVER['REMOTE_ADDR'], $whitelist)) {
-            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);//for localhost
-            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);//for localhost
+            curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false); //for localhost
+            curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false); //for localhost
         }
 
         //curl_setopt($curl, CURLOPT_SSLVERSION,3);//forMAMP
@@ -36,7 +36,7 @@ class JMAYtVideo
         if (!$return || array_key_exists('error', $return)) {
             if (is_array($return) && array_key_exists('error', $return)) {
                 $return = $return['error']['errors'][0]['reason'];
-            }//keyInvalid, playlistNotFound, accessNotConfigured, ipRefererBlocked, keyExpired
+            } //keyInvalid, playlistNotFound, accessNotConfigured, ipRefererBlocked, keyExpired
             else {
                 $return = 'unknown';
             }
@@ -80,7 +80,7 @@ class JMAYtVideo
  *
  * */
     private function map_meta($data, $id)
-    {//map youtude array to schema proprties
+    { //map youtude array to schema proprties
         $snippet = $data['snippet'];
         $channel = JMAYtVideo::video_snippet($snippet['channelId'], 'channels');
         $logo = $channel['snippet']['thumbnails']['default'];
@@ -91,8 +91,8 @@ class JMAYtVideo
         $yt_meta_array_items['pub_name'] = $snippet['channelTitle'];
         $yt_meta_array_items['logo_url'] = $logo['url'];
         $yt_meta_array_items['logo_width'] = $logo['width'];
-        $yt_meta_array_items['logo_height'] = $logo['height'] > 60? 60: $logo['height'];
-        $yt_meta_array_items['description'] = trim($snippet['description'])?$snippet['description']: $snippet['title'];
+        $yt_meta_array_items['logo_height'] = $logo['height'] > 60 ? 60 : $logo['height'];
+        $yt_meta_array_items['description'] = trim($snippet['description']) ? $snippet['description'] : $snippet['title'];
         $yt_meta_array_items['thumbnailUrl'] = $snippet['thumbnails']['default']['url'];
         $yt_meta_array_items['standardUrl'] = '';
         if (isset($snippet['thumbnails']['standard'])) {
@@ -118,15 +118,15 @@ class JMAYtVideo
     public function process_display_atts($atts)
     {
         $this->col_space =
-        $this->box_string =
-        $this->button_string =
-        $this->h3_string =
-        $this->trans_atts_id = '';
+            $this->box_string =
+            $this->button_string =
+            $this->h3_string =
+            $this->trans_atts_id = '';
         $this->item_font_length = -23;
         $this->start = 0;
 
         //the relavent atributes to check for values
-        $display_att_list = array( 'item_font_color', 'item_font_size', 'item_font_alignment', 'item_font_length', 'item_bg', 'item_border', 'item_gutter','item_spacing','button_font','button_bg', 'width', 'alignment', 'start' );
+        $display_att_list = array('item_font_color', 'item_font_size', 'item_font_alignment', 'item_font_length', 'item_bg', 'item_border', 'item_gutter', 'item_spacing', 'button_font', 'button_bg', 'width', 'alignment', 'start');
         //produce $display_atts with relavent values (if any)
         $trans_atts_id = '';
         foreach ($display_att_list as $index) {
@@ -153,10 +153,10 @@ class JMAYtVideo
         //box gutter and vertical spacing
         if ($item_gutter || $item_spacing) {
             if ($item_gutter) {
-                $item_gutter = floor($item_gutter/2);
+                $item_gutter = floor($item_gutter / 2);
             }
-            $gutter = $item_gutter? 'padding-left:' . $item_gutter . 'px;padding-right:' . $item_gutter . 'px;':'';
-            $spacing = $item_spacing? 'margin-bottom:' . $item_spacing . 'px;':'';
+            $gutter = $item_gutter ? 'padding-left:' . $item_gutter . 'px;padding-right:' . $item_gutter . 'px;' : '';
+            $spacing = $item_spacing ? 'margin-bottom:' . $item_spacing . 'px;' : '';
             $format = ' style="%s%s" ';
             $col_space = sprintf($format, $spacing, $gutter);
             $this->col_space = $col_space;
@@ -168,9 +168,9 @@ class JMAYtVideo
             if ($alignment) {
                 $jmayt_item_wrap_align = ' align' . $alignment;
             }
-            $width = $width? 'width:' . $width . ';': '';
-            $bg = $item_bg? 'background-color:' . $item_bg . ';':'';
-            $border = $item_border? 'border:solid 2px ' . $item_border . '':'';
+            $width = $width ? 'width:' . $width . ';' : '';
+            $bg = $item_bg ? 'background-color:' . $item_bg . ';' : '';
+            $border = $item_border ? 'border:solid 2px ' . $item_border . '' : '';
             $format = ' style="%s%s%s" ';
             $box_styles = sprintf($format, $bg, $border, $width);
         }
@@ -178,17 +178,17 @@ class JMAYtVideo
         $this->box_string = $jmayt_item_wrap . $box_styles;
         //expansion button font color and bg
         if ($button_font || $button_bg) {
-            $color = $button_font? 'color:' . $button_font . ';':'';
-            $bg = $button_bg? 'background-color:' . $button_bg . ';':'';
+            $color = $button_font ? 'color:' . $button_font . ';' : '';
+            $bg = $button_bg ? 'background-color:' . $button_bg . ';' : '';
             $format = ' style="%s%s" ';
             $button_string = sprintf($format, $bg, $color);
             $this->button_string = $button_string;
         }
         //h3 color size and align
         if ($item_font_color || $item_font_size || $item_font_alignment) {
-            $color = $item_font_color? 'color:' . $item_font_color . ';':'';
-            $size = $item_font_size? 'font-size:' . $item_font_size . 'px;':'';
-            $align = $item_font_alignment? 'text-align:' . $item_font_alignment . ';':'';
+            $color = $item_font_color ? 'color:' . $item_font_color . ';' : '';
+            $size = $item_font_size ? 'font-size:' . $item_font_size . 'px;' : '';
+            $align = $item_font_alignment ? 'text-align:' . $item_font_alignment . ';' : '';
             $format = ' style="%s%s%s" ';
             $h3_string = sprintf($format, $color, $size, $align);
             $this->h3_string = $h3_string;
@@ -256,7 +256,7 @@ class JMAYtVideo
                 $h3_title = substr($h3_title, 0, strpos($h3_title, "\n"));
                 $elipsis = '&nbsp;...';
             }
-            $start_text = $start > 0? '&amp;start=' . $start: '';
+            $start_text = $start > 0 ? '&amp;start=' . $start : '';
 
             $return .= '<div' . $this->box_string . '>';
             $return .= '<div class="jmayt-item">';
@@ -264,21 +264,21 @@ class JMAYtVideo
             $return .= '<div class="jma-responsive-wrap" itemprop="video" itemscope itemtype="https://schema.org/VideoObject">';
             $return .= '<button class="jmayt-btn jmayt-sm" ' . $this->button_string . '>&#xe140;</button>';
             $return .= JMAYtVideo::jma_youtube_schema_html($meta_array);
-            if (!$jmayt_options_array['cache_images']) {// single video or image caching off
-                $return .=  '<div><iframe src="' . $meta_array['embedURL']. '?rel=0&amp;showinfo=0'  . $start_text . '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
+            if (!$jmayt_options_array['cache_images']) { // single video or image caching off
+                $return .=  '<div><iframe src="' . $meta_array['embedURL'] . '?rel=0&amp;showinfo=0'  . $start_text . '" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>';
             } else {
                 $overlay = new JMAYtOverlay(array($meta_array['standardUrl'], $meta_array['thumbnailUrl']), $id);
                 $image_url = $overlay->get_url();
                 $return .= '<button class="jmayt-overlay-button" data-start="' . $start . '" data-embedid="' . $id . '"><img src="' . $image_url . '"/></button>';
                 $return .=  '<div id="video' . $id . '" class="jmayt-hidden-iframe"></div>';
             }
-            $return .= '</div>';//jma-responsive-wrap
-            $return .= '</div>';//jmayt-video-wrap
+            $return .= '</div>'; //jma-responsive-wrap
+            $return .= '</div>'; //jmayt-video-wrap
             $return .= '<div class="jmayt-text-wrap">';
             $return .= '<h3 class="jmayt-title" ' . $this->h3_string . '>' . $h3_title . $elipsis . '</h3>';
-            $return .= '</div>';//jmayt-text-wrap
-            $return .= '</div>';//yt-item
-            $return .= '</div>';//yt-item-wrap
+            $return .= '</div>'; //jmayt-text-wrap
+            $return .= '</div>'; //yt-item
+            $return .= '</div>'; //yt-item-wrap
             return $return;
         }
     }
@@ -295,7 +295,7 @@ class JMAYtVideo
         global $jmayt_options_array;
         $trans_id = 'jmaytvideo' . $this->id . $this->trans_atts_id;
         $return = get_transient($trans_id);
-        if (false === $return || !$jmayt_options_array['cache']) {//force reset if cache option at 0
+        if (false === $return || !$jmayt_options_array['cache']) { //force reset if cache option at 0
             $return = JMAYtVideo::single_html($this->id, false);
             set_transient($trans_id, $return, $jmayt_options_array['cache']);
         }
@@ -305,18 +305,18 @@ class JMAYtVideo
 
     protected function error_handler($string)
     {
-        switch ($string) {//keyInvalid, playlistNotFound, accessNotConfigured or quotaExceeded, ipRefererBlocked, keyExpired, videoNotFound
+        switch ($string) { //keyInvalid, playlistNotFound, accessNotConfigured or quotaExceeded, ipRefererBlocked, keyExpired, videoNotFound
             case 'keyInvalid':
             case 'keyExpired':
-            $explaination = '<p>keyInvalid or keyExpired:<br/>';
-            $explaination .= 'Either the api value is blank or the wrong value has been inserted for the api value see: WordPress Dashboard > Settings > YouTube Playlists with Schema (<a href="' . admin_url('options-general.php?page=jmayt_settings') . '" target="_blank">CLICK HERE</a>)';
-            $explaination .= '</p>';
+                $explaination = '<p>keyInvalid or keyExpired:<br/>';
+                $explaination .= 'Either the api value is blank or the wrong value has been inserted for the api value see: WordPress Dashboard > Settings > YouTube Playlists with Schema (<a href="' . admin_url('options-general.php?page=jmayt_settings') . '" target="_blank">CLICK HERE</a>)';
+                $explaination .= '</p>';
                 break;
             case 'accessNotConfigured':
             case 'quotaExceeded':
-            $explaination = '<p>accessNotConfigured or quotaExceeded:<br/>';
-            $explaination .= 'This generally means that the YouTube Data Api is not enalbed for your Google Project. Try going <a href="https://console.developers.google.com/apis/api/" target="_blank" >here</a> make sure you are in the correct project. Find the api under the Library tab and click "Enable" toward the top of the tab content';
-            $explaination .= '</p>';
+                $explaination = '<p>accessNotConfigured or quotaExceeded:<br/>';
+                $explaination .= 'This generally means that the YouTube Data Api is not enalbed for your Google Project. Try going <a href="https://console.developers.google.com/apis/api/" target="_blank" >here</a> make sure you are in the correct project. Find the api under the Library tab and click "Enable" toward the top of the tab content';
+                $explaination .= '</p>';
                 break;
             case 'ipRefererBlocked':
                 $explaination = '<p>ipRefererBlocked:<br/>';
@@ -325,9 +325,9 @@ class JMAYtVideo
                 break;
             case 'playlistNotFound':
             case 'videoNotFound':
-            $explaination = '<p>playlistNotFound or videoNotFound:<br/>';
-            $explaination .= '<strong>Good News! </strong>Your api code is correct either the video id or plylist id is incorrect';
-            $explaination .= '</p>';
+                $explaination = '<p>playlistNotFound or videoNotFound:<br/>';
+                $explaination .= '<strong>Good News! </strong>Your api code is correct either the video id or plylist id is incorrect';
+                $explaination .= '</p>';
                 break;
             default:
                 $explaination = '<p>Unknown:<br/>';
