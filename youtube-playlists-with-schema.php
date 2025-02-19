@@ -554,7 +554,7 @@ function jma_yt_grid($atts)
     echo '<div ';
     foreach ($attributes as $name => $attribute) { //build opening div ala html shortcode
         if ($attribute) { // check to make sure the attribute exists
-            echo $name . '="' . $attribute . '" ';
+            echo $name . '="' . sanitize_text_field($attribute) . '" ';
         }
     }
     echo '>';
